@@ -1,0 +1,64 @@
+description = "AO-Framework für Railway Oriented Programming"
+
+logger.info("Gradle Projekt ${project.name}")
+logger.info("Das Encoding des Projekts <${project.group}.${project.name}> ist ${project.encoding}")
+logger.info("Artifacts Repo: $project.artifactsURL$project.artifactsRepoKey")
+logger.info(description)
+
+logger.debug("Build mit project.gradleApplyFromPath: ${project.gradleApplyFromPath}")
+logger.debug("Konfiguration unter project.pluginConfigPath: ${project.pluginConfigPath}")
+
+configurations.create('${project.name}')
+
+buildscript {
+    repositories {
+        maven { url = "${project.artifactsURL}${project.artifactsRepoKey}".toURL() }
+        ivy { url = "${project.artifactsURL}${project.artifactsRepoKey}".toURL() }
+    }
+    apply from: "${project.gradleApplyFromPath}/net-aokv-classpath.gradle", to: buildscript
+}
+logger.debug('buildscript Einstellungen wurden aktiviert')
+
+[
+	"maven",
+	"project-report",
+	"java",
+	"eclipse",
+	"junit4",
+	"mockito",
+	"checkstyle",
+	"findbugs",
+	"pmd",
+	"jacoco",
+	"tasks",
+	"application",
+	"jdepend"
+].each {
+	apply from: "${project.gradleApplyFromPath}/net-aokv-${it}.gradle"
+}
+
+repositories.each { logger.info("Repository $it.name") }
+
+dependencies {
+	compile 'xml-apis:xml-apis:1.4.01',
+		'com.google.guava:guava:19.0'
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'xml-apis:xml-apis:1.4.01'
+    }
+}
+
+jar {
+    from sourceSets.main.allJava
+}
+
+task testJar(type: Jar, dependsOn: testClasses) {
+    classifier = "tests"
+    from sourceSets.test.output + sourceSets.test.allSource
+}
+
+artifacts {
+    archives testJar
+}

@@ -1,0 +1,26 @@
+apply plugin: 'jacoco'
+
+logger.info('JaCoCo-Plugin aktiviert')
+
+jacoco {
+    toolVersion = project.jacocoVersion
+    reportsDir = file("${project.reporting.baseDir.absolutePath}/jacoco")
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled true
+        xml.enabled true
+        csv.enabled false
+    }
+}
+
+test {
+    jacoco {
+        append = false
+        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+        classDumpFile = file("$buildDir/jacoco/classpathdumps")
+    }
+}
+
+build.dependsOn jacocoTestReport

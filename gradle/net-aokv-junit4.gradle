@@ -1,0 +1,10 @@
+/*
+    JUNIT4 Einstellungen
+ */
+
+logger.info("JUnit ${project.junit4Version} Plugin aktiviert")
+
+dependencies {
+    testCompile "org.hamcrest:hamcrest-library:${hamcrestVersion}",
+    	"junit:junit:${junit4Version}"
+}

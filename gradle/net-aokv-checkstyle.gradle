@@ -1,0 +1,16 @@
+apply plugin: 'checkstyle'
+
+logger.info('Checkstyle plugin activated')
+logger.info("pluginConfigPath: ${project.pluginConfigPath}")
+
+checkstyle {
+	project.ext.checkstyleVersion = '6.15'
+	toolVersion = '6.15'
+    ignoreFailures = true
+	configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
+
+	dependencies{
+		assert project.hasProperty("checkstyleVersion")
+		checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
+	}
+}

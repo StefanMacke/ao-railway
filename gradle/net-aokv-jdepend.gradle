@@ -1,0 +1,16 @@
+/*
+    JDepend Einstellungen
+
+    Gradle Website Info:
+    Performs quality checks on your project's source files using JDepend and generates reports from these checks.
+ */
+apply plugin: 'jdepend'
+
+logger.info('JDepend Plugin aktiviert')
+
+tasks.withType(JDepend) {
+    reports {
+        xml.enabled true
+        text.enabled false
+    }
+}

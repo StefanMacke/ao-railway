@@ -1,0 +1,9 @@
+*.class
+.gradle
+build
+bin
+Test.db
+*.log
+.classpath
+.project
+.settings

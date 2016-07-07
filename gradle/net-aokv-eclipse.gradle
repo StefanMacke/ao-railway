@@ -1,0 +1,46 @@
+/*
+    Eclipse Einstellungen
+
+    Gradle Website Info:
+    Generates files that are used by Eclipse IDE, thus making it possible to import the project into Eclipse.
+ */
+apply plugin: 'eclipse'
+
+logger.info('Eclipse Plugin aktiviert')
+
+eclipseProject {
+
+    def sep = System.getProperty('file.separator')
+    def eclipseSettingsFile = getProjectDir().toString() + sep + ".settings" + sep + "org.eclipse.core.resources.prefs"
+
+    logger.info("eclipseSettingsFile: ${eclipseSettingsFile}")
+
+    def dateiPfad = new File(eclipseSettingsFile)
+
+    def settingPfad = new File(dateiPfad.getParent())
+    if (!settingPfad.exists()) {
+        logger.info("settingPfad: ${settingPfad} wird erstellt")
+        settingPfad.mkdirs()
+    }
+
+    dateiPfad.withWriter {
+        it.println "eclipse.preferences.version=1"
+        it.println "encoding=" + project.encoding
+    }
+}
+
+// http://stackoverflow.com/questions/17451567/splitting-main-and-test-in-gradles-eclipse-builds
+import org.gradle.plugins.ide.eclipse.model.SourceFolder
+eclipse.classpath.file {
+    beforeMerged { classpath ->
+        classpath.entries.clear()
+    }
+    whenMerged {  cp ->
+        cp.entries.findAll { it instanceof SourceFolder && it.path.startsWith("src/") }.each {
+			it.output = it.path.replace("/src", "bin/")
+        }
+        cp.entries.removeAll { it.kind == "output" }
+    }
+}
+
+tasks.eclipse.dependsOn cleanEclipse

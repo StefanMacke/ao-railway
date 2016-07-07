@@ -1,0 +1,18 @@
+/*
+    FindBugs Einstellungen
+
+    Gradle Website Info:
+    Performs quality checks on your project's Java source files using FindBugs and generates reports from these checks.
+ */
+apply plugin: 'findbugs'
+
+logger.info('FindBugs Plugin aktiviert')
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+    ignoreFailures = true
+    reportLevel = 'low'
+}

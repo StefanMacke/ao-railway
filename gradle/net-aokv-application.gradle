@@ -1,0 +1,23 @@
+/*
+    Application Einstellungen
+ */
+apply plugin: 'application'
+
+task createDocs {
+    ext.docs = file("$buildDir/docs")
+    outputs.dir ext.docs
+    doLast {
+        ext.docs.mkdirs()
+        new File(ext.docs, "readme.txt").write(project.description)
+    }
+}
+
+applicationDistribution.from(createDocs) {
+    into "docs"
+}
+
+mainClassName = "de.ao.ddp.main.Main"
+
+jar {
+	manifest.attributes("Main-Class": mainClassName)
+}
