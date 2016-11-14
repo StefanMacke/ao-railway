@@ -1,18 +1,15 @@
-/*
-    Maven Einstellungen
- */
 apply plugin: 'maven'
 
-logger.info('Maven Plugin aktiviert')
+logger.info('Maven Plugin activated')
 
 repositories {
     mavenLocal()
     maven {
-        name = "Maven ALTE OLDENBURGER Intranet Repo"
+        name = "Maven Repo"
         url = "${project.artifactsURL}${project.artifactsRepoKey}".toURL()
     }
     ivy {
-        name = "Ivy ALTE OLDENBURGER Intranet Repo"
+        name = "Ivy Repo"
         url = "${project.artifactsURL}${project.artifactsRepoKey}".toURL()
     }
 }

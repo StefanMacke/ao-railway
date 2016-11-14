@@ -1,9 +1,6 @@
-/*
-    Mockito Einstellungen
- */
 def mockitoVersion = '1.9.+'
 
-logger.info("mockito (all) ${mockitoVersion} Plugin aktiviert")
+logger.info("mockito (all) ${mockitoVersion} Plugin activated")
 
 dependencies {
     testCompile group: 'org.mockito', name: 'mockito-core', version: mockitoVersion

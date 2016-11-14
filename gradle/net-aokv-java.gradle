@@ -1,15 +1,12 @@
-/*
-    Java Einstellungen
- */
 apply plugin: 'java'
 
 sourceCompatibility = project.javaVersion
 targetCompatibility = project.javaVersion
 
-logger.info("Java Plugin aktiviert - kompatibel zu Version ${sourceCompatibility}")
+logger.info("Java Plugin activated - version ${sourceCompatibility}")
 
 tasks.withType(JavaCompile) {
 	options.encoding = project.encoding
 }
 
-logger.debug("Compile mit Encoding ${project.encoding}")
+logger.debug("Encoding ${project.encoding}")

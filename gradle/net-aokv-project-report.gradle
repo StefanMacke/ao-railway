@@ -1,7 +1,1 @@
-/*
-    Gradle Projekt Report Einstellungen
-
-    Gradle Website Info:
-    Generates reports containing useful information about your Gradle build.
- */
 apply plugin: 'project-report'

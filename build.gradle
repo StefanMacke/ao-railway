@@ -1,4 +1,4 @@
-description = "AO-Framework für Railway Oriented Programming"
+description = "Framework for Railway Oriented Programming"
 
 logger.info("Gradle Projekt ${project.name}")
 logger.info("Das Encoding des Projekts <${project.group}.${project.name}> ist ${project.encoding}")
@@ -30,8 +30,6 @@ logger.debug('buildscript Einstellungen wurden aktiviert')
 	"findbugs",
 	"pmd",
 	"jacoco",
-	"tasks",
-	"application",
 	"jdepend"
 ].each {
 	apply from: "${project.gradleApplyFromPath}/net-aokv-${it}.gradle"

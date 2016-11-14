@@ -1,14 +1,6 @@
-/*
-    PMD Einstellungen
-
-    Gradle Website Info:
-    Performs quality checks on your project's Java source files using PMD and generates reports from these checks.
-
-    Rulesets: http://pmd.sourceforge.net/
- */
 apply plugin: 'pmd'
 
-logger.info('PMD Plugin aktiviert')
+logger.info('PMD Plugin activated')
 logger.info("pluginConfigPath: ${project.pluginConfigPath}")
 
 tasks.withType(Pmd) {

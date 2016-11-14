@@ -1,12 +1,6 @@
-/*
-    Eclipse Einstellungen
-
-    Gradle Website Info:
-    Generates files that are used by Eclipse IDE, thus making it possible to import the project into Eclipse.
- */
 apply plugin: 'eclipse'
 
-logger.info('Eclipse Plugin aktiviert')
+logger.info('Eclipse Plugin activated')
 
 eclipseProject {
 
@@ -15,15 +9,15 @@ eclipseProject {
 
     logger.info("eclipseSettingsFile: ${eclipseSettingsFile}")
 
-    def dateiPfad = new File(eclipseSettingsFile)
+    def filePath = new File(eclipseSettingsFile)
 
-    def settingPfad = new File(dateiPfad.getParent())
-    if (!settingPfad.exists()) {
-        logger.info("settingPfad: ${settingPfad} wird erstellt")
-        settingPfad.mkdirs()
+    def settingPath = new File(filePath.getParent())
+    if (!settingPath.exists()) {
+        logger.info("settingPath: ${settingPath} created")
+        settingPath.mkdirs()
     }
 
-    dateiPfad.withWriter {
+    filePath.withWriter {
         it.println "eclipse.preferences.version=1"
         it.println "encoding=" + project.encoding
     }
