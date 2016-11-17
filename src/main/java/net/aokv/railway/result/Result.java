@@ -11,11 +11,11 @@ import java.util.function.Supplier;
  * Result of a computation or any other action. Can be successful and contain a value or failed and
  * contain an error (Message).
  *
- * @param <W> The type of the contained value.
+ * @param <TSuccess> The type of the contained value.
  */
-public final class Result<W>
+public final class Result<TSuccess>
 {
-	private final Optional<W> value;
+	private final Optional<TSuccess> value;
 	private final Optional<Message> error;
 
 	/**
@@ -24,10 +24,10 @@ public final class Result<W>
 	 * @param error The error message.
 	 * @return Failed Result.
 	 */
-	public static <W> Result<W> withError(final Message error)
+	public static <T> Result<T> withError(final Message error)
 	{
 		assertParameterNotNull(error, "Error");
-		return new Result<W>(null, error);
+		return new Result<T>(null, error);
 	}
 
 	/**
@@ -36,7 +36,7 @@ public final class Result<W>
 	 * @param error The error message.
 	 * @return Failed Result.
 	 */
-	public static <W> Result<W> withError(final String error)
+	public static <T> Result<T> withError(final String error)
 	{
 		assertParameterNotNull(error, "Error");
 		return withError(Message.withError(error));
@@ -59,10 +59,10 @@ public final class Result<W>
 	 * @return Successful Result with the given value.
 	 * @throws IllegalArgumentException If value is null.
 	 */
-	public static <W> Result<W> withValue(final W value)
+	public static <T> Result<T> withValue(final T value)
 	{
 		assertParameterNotNull(value, "Value");
-		return new Result<W>(value, null);
+		return new Result<T>(value, null);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public final class Result<W>
 	 * @param error The error to set, if value is null.
 	 * @return Successful Result with value or failed Result.
 	 */
-	public static <W> Result<W> with(final W value, final Message error)
+	public static <T> Result<T> with(final T value, final Message error)
 	{
 		return Result.with(Optional.ofNullable(value), error);
 	}
@@ -86,7 +86,7 @@ public final class Result<W>
 	 * @param error The error to set, if value is null or an empty Optional.
 	 * @return Successful Result with value or failed Result.
 	 */
-	public static <W> Result<W> with(final Optional<W> valueOrNothing, final Message error)
+	public static <T> Result<T> with(final Optional<T> valueOrNothing, final Message error)
 	{
 		if (valueOrNothing == null || !valueOrNothing.isPresent())
 		{
@@ -110,7 +110,7 @@ public final class Result<W>
 		error = Optional.empty();
 	}
 
-	private Result(final W value, final Message error)
+	private Result(final TSuccess value, final Message error)
 	{
 		this.value = Optional.ofNullable(value);
 		this.error = Optional.ofNullable(error);
@@ -143,7 +143,7 @@ public final class Result<W>
 	 * @throws FailedResultHasNoValueException If Result is failed.
 	 * @throws EmptyResultHasNoValueException If Result does not have a value.
 	 */
-	public W getValue()
+	public TSuccess getValue()
 	{
 		if (isFailure())
 		{
@@ -187,24 +187,24 @@ public final class Result<W>
 	@Override
 	public String toString()
 	{
-		final StringBuilder ergebnis = new StringBuilder("Result (");
+		final StringBuilder result = new StringBuilder("Result (");
 		if (isSuccess())
 		{
-			ergebnis.append("Success");
+			result.append("Success");
 			if (value.isPresent())
 			{
-				ergebnis.append(" with value <");
-				ergebnis.append(getValue());
-				ergebnis.append('>');
+				result.append(" with value <");
+				result.append(getValue());
+				result.append('>');
 			}
 		}
 		else
 		{
-			ergebnis.append("Failure: ");
-			ergebnis.append(getError());
+			result.append("Failure: ");
+			result.append(getError());
 		}
-		ergebnis.append(')');
-		return ergebnis.toString();
+		result.append(')');
+		return result.toString();
 	}
 
 	/**
@@ -218,7 +218,7 @@ public final class Result<W>
 	public static Result<?> combine(final Result<?>... results)
 	{
 		return Arrays.stream(results)
-				.filter(ergebnis -> ergebnis.isFailure())
+				.filter(result -> result.isFailure())
 				.findFirst()
 				.orElse(Result.withoutValue());
 	}
@@ -260,7 +260,7 @@ public final class Result<W>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public Result<W> onSuccess(final Consumer<W> function)
+	public Result<TSuccess> onSuccess(final Consumer<TSuccess> function)
 	{
 		if (!isFailure())
 		{
@@ -316,7 +316,7 @@ public final class Result<W>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public Result<W> onBoth(final Consumer<Result<W>> function)
+	public Result<TSuccess> onBoth(final Consumer<Result<TSuccess>> function)
 	{
 		function.accept(this);
 		return this;
@@ -330,7 +330,7 @@ public final class Result<W>
 	 * @return Result with checked value or failed Result.
 	 * @throws EmptyResultHasNoValueException If the Result does not have a value.
 	 */
-	public Result<W> ensure(final Predicate<W> predicate, final Message error)
+	public Result<TSuccess> ensure(final Predicate<TSuccess> predicate, final Message error)
 	{
 		if (isFailure())
 		{
@@ -361,7 +361,7 @@ public final class Result<W>
 	 * @param function A function that returns a <code>Result&lt;Result&lt;T&gt;&gt;</code>.
 	 * @return The extracted <code>Result&lt;T&gt;</code>.
 	 */
-	public <T> Result<T> flatMap(final Function<W, Result<T>> function)
+	public <T> Result<T> flatMap(final Function<TSuccess, Result<T>> function)
 	{
 		final Optional<Result<T>> result = resultIfError();
 		return result.orElseGet(() -> function.apply(getValue()));
@@ -373,7 +373,7 @@ public final class Result<W>
 	 * @param function A function that returns the new value.
 	 * @return The Result of the function's value or a failed Result.
 	 */
-	public <T> Result<T> map(final Function<W, T> function)
+	public <T> Result<T> map(final Function<TSuccess, T> function)
 	{
 		return flatMap(function.andThen(value -> Result.withValue(value)));
 	}
