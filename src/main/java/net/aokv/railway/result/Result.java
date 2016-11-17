@@ -223,13 +223,6 @@ public final class Result<TSuccess>
 				.orElse(Result.withoutValue());
 	}
 
-	private <T> Optional<Result<T>> resultIfError()
-	{
-		return isFailure()
-				? Optional.of(Result.withError(getError()))
-				: Optional.empty();
-	}
-
 	/**
 	 * Runs the given function, if the Result is successful.
 	 *
@@ -238,8 +231,11 @@ public final class Result<TSuccess>
 	 */
 	public <T> Result<T> onSuccess(final Supplier<Result<T>> function)
 	{
-		final Optional<Result<T>> result = resultIfError();
-		return result.orElseGet(function);
+		if (isFailure())
+		{
+			return Result.withError(getError());
+		}
+		return function.get();
 	}
 
 	/**
@@ -363,8 +359,11 @@ public final class Result<TSuccess>
 	 */
 	public <T> Result<T> flatMap(final Function<TSuccess, Result<T>> function)
 	{
-		final Optional<Result<T>> result = resultIfError();
-		return result.orElseGet(() -> function.apply(getValue()));
+		if (isFailure())
+		{
+			return Result.withError(getError());
+		}
+		return function.apply(getValue());
 	}
 
 	/**
