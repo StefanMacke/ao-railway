@@ -13,33 +13,14 @@ import java.util.function.Supplier;
  * @param <TSuccess> The type of the contained value.
  * @param <TFailure> The type of the error object in case of a failure.
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractResult<TSuccess, TFailure>
 {
-	public class EmptyResult extends AbstractResult<Void, TFailure>
-	{
-		public EmptyResult()
-		{
-			super(null, null);
-		}
-	}
+	protected abstract <TResult extends AbstractResult<Void, TFailure>> TResult emptyResult();
 
-	public class SuccessfulResult<T> extends AbstractResult<T, TFailure>
-	{
-		public SuccessfulResult(final T value)
-		{
-			super(value, null);
-			assertParameterNotNull(value, "Value");
-		}
-	}
+	protected abstract <TResult extends AbstractResult<T, TFailure>, T> TResult successfulResult(T value);
 
-	public class FailedResult<T> extends AbstractResult<T, TFailure>
-	{
-		public FailedResult(final TFailure error)
-		{
-			super(null, error);
-			assertParameterNotNull(error, "Error");
-		}
-	}
+	protected abstract <TResult extends AbstractResult<T, TFailure>, T> TResult failedResult(TFailure error);
 
 	private final Optional<TSuccess> value;
 	private final Optional<TFailure> error;
@@ -50,7 +31,7 @@ public abstract class AbstractResult<TSuccess, TFailure>
 		this.error = Optional.ofNullable(error);
 	}
 
-	protected void assertParameterNotNull(final Object parameter, final String name)
+	protected static void assertParameterNotNull(final Object parameter, final String name)
 	{
 		if (parameter == null)
 		{
@@ -157,17 +138,17 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param results The Results to combine.
 	 * @return Result of the combination.
 	 */
-	public AbstractResult<?, TFailure> combine(final AbstractResult<?, TFailure> otherResult)
+	public <TResult extends AbstractResult<?, TFailure>> TResult combine(final TResult otherResult)
 	{
 		if (isFailure())
 		{
-			return this;
+			return (TResult) this;
 		}
 		if (otherResult.isFailure())
 		{
 			return otherResult;
 		}
-		return new EmptyResult();
+		return (TResult) emptyResult();
 	}
 
 	/**
@@ -176,11 +157,12 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return Result of the function.
 	 */
-	public <T> AbstractResult<T, TFailure> onSuccess(final Supplier<AbstractResult<T, TFailure>> function)
+	public <TResult extends AbstractResult<T, TFailure>, T> TResult onSuccess(
+			final Supplier<TResult> function)
 	{
 		if (isFailure())
 		{
-			return new FailedResult<T>(getError());
+			return failedResult(getError());
 		}
 		return function.get();
 	}
@@ -192,9 +174,10 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param clazz The return value of the function.
 	 * @return Return value of the function wrapped in a Result.
 	 */
-	public <T> AbstractResult<T, TFailure> onSuccess(final Supplier<T> function, final Class<T> clazz)
+	public <TResult extends AbstractResult<T, TFailure>, T> TResult onSuccess(
+			final Supplier<T> function, final Class<T> clazz)
 	{
-		return onSuccess(() -> new SuccessfulResult<T>(function.get()));
+		return onSuccess(() -> successfulResult(function.get()));
 	}
 
 	/**
@@ -203,13 +186,13 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public AbstractResult<TSuccess, TFailure> onSuccess(final Consumer<TSuccess> function)
+	public <TResult extends AbstractResult<TSuccess, TFailure>> TResult onSuccess(final Consumer<TSuccess> function)
 	{
 		if (!isFailure())
 		{
 			function.accept(getValue());
 		}
-		return this;
+		return (TResult) this;
 	}
 
 	/**
@@ -218,13 +201,13 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public AbstractResult<?, TFailure> onFailure(final Runnable function)
+	public <TResult extends AbstractResult<?, TFailure>> TResult onFailure(final Runnable function)
 	{
 		if (isFailure())
 		{
 			function.run();
 		}
-		return this;
+		return (TResult) this;
 	}
 
 	/**
@@ -233,10 +216,11 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public AbstractResult<?, ?> onBoth(final Consumer<AbstractResult<TSuccess, TFailure>> function)
+	public <TResult extends AbstractResult<?, ?>> TResult onBoth(
+			final Consumer<? super AbstractResult<TSuccess, TFailure>> function)
 	{
 		function.accept(this);
-		return this;
+		return (TResult) this;
 	}
 
 	/**
@@ -247,17 +231,18 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @return Result with checked value or failed Result.
 	 * @throws EmptyResultHasNoValueException If the Result does not have a value.
 	 */
-	public AbstractResult<TSuccess, TFailure> ensure(final Predicate<TSuccess> predicate, final TFailure error)
+	public <TResult extends AbstractResult<TSuccess, TFailure>> TResult ensure(final Predicate<TSuccess> predicate,
+			final TFailure error)
 	{
 		if (isFailure())
 		{
-			return this;
+			return (TResult) this;
 		}
 		try
 		{
 			if (!predicate.test(getValue()))
 			{
-				return new FailedResult<TSuccess>(error);
+				return failedResult(error);
 			}
 		}
 		catch (final EmptyResultHasNoValueException exception)
@@ -266,9 +251,9 @@ public abstract class AbstractResult<TSuccess, TFailure>
 		}
 		catch (final Exception exception)
 		{
-			return new FailedResult<TSuccess>(error);
+			return failedResult(error);
 		}
-		return this;
+		return (TResult) this;
 	}
 
 	/**
@@ -278,11 +263,11 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param function A function that returns a <code>Result&lt;Result&lt;T&gt;&gt;</code>.
 	 * @return The extracted <code>Result&lt;T&gt;</code>.
 	 */
-	public <T> AbstractResult<T, TFailure> flatMap(final Function<TSuccess, AbstractResult<T, TFailure>> function)
+	public <TResult extends AbstractResult<T, TFailure>, T> TResult flatMap(final Function<TSuccess, TResult> function)
 	{
 		if (isFailure())
 		{
-			return new FailedResult<>(getError());
+			return failedResult(getError());
 		}
 		return function.apply(getValue());
 	}
@@ -293,9 +278,9 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param function A function that returns the new value.
 	 * @return The Result of the function's value or a failed Result.
 	 */
-	public <T> AbstractResult<T, TFailure> map(final Function<TSuccess, T> function)
+	public <TResult extends AbstractResult<T, TFailure>, T> TResult map(final Function<TSuccess, T> function)
 	{
-		return flatMap(function.andThen(value -> new SuccessfulResult<T>(value)));
+		return flatMap(function.andThen(value -> successfulResult(value)));
 	}
 
 	/**
@@ -305,22 +290,22 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param error Error if inner value cannot be extracted.
 	 * @return Result of the inner value of the Optional or a failed Result.
 	 */
-	public <T> AbstractResult<T, TFailure> ifValueIsPresent(final Class<T> innerValue, final TFailure error)
+	public <TResult extends AbstractResult<T, TFailure>, T> TResult ifValueIsPresent(
+			final Class<T> innerValue, final TFailure error)
 	{
 		if (isFailure())
 		{
-			return new FailedResult<T>(getError());
+			return failedResult(getError());
 		}
 		if (!(getValue() instanceof Optional))
 		{
-			return new FailedResult<T>(error);
+			return failedResult(error);
 		}
-		@SuppressWarnings("unchecked")
 		final Optional<T> optional = (Optional<T>) getValue();
 		if (!optional.isPresent())
 		{
-			return new FailedResult<T>(error);
+			return failedResult(error);
 		}
-		return new SuccessfulResult<T>(optional.get());
+		return successfulResult(optional.get());
 	}
 }

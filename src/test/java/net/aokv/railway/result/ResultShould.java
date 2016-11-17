@@ -102,19 +102,19 @@ public class ResultShould
 	@Test
 	public void beCombinedWithSuccessfulResults()
 	{
-		assertThat(Result.combine(THE_RESULT, OTHER_RESULT), isSuccess());
-		assertThat(Result.combine(THE_RESULT, RESULT_WITHOUT_VALUE), isSuccess());
-		assertThat(Result.combine(OTHER_RESULT, THE_RESULT), isSuccess());
-		assertThat(Result.combine(RESULT_WITHOUT_VALUE, THE_RESULT), isSuccess());
+		assertThat(THE_RESULT.combine(OTHER_RESULT), isSuccess());
+		assertThat(THE_RESULT.combine(RESULT_WITHOUT_VALUE), isSuccess());
+		assertThat(OTHER_RESULT.combine(THE_RESULT), isSuccess());
+		assertThat(RESULT_WITHOUT_VALUE.combine(THE_RESULT), isSuccess());
 	}
 
 	@Test
 	public void beCombinedWithFailedResults()
 	{
-		assertThat(Result.combine(FAILED_RESULT, THE_RESULT), isFailure());
-		assertThat(Result.combine(FAILED_RESULT, RESULT_WITHOUT_VALUE), isFailure());
-		assertThat(Result.combine(FAILED_RESULT, FAILED_RESULT), isFailure());
-		assertThat(Result.combine(THE_RESULT, FAILED_RESULT), isFailure());
-		assertThat(Result.combine(RESULT_WITHOUT_VALUE, FAILED_RESULT), isFailure());
+		assertThat(FAILED_RESULT.combine(THE_RESULT), isFailure());
+		assertThat(FAILED_RESULT.combine(RESULT_WITHOUT_VALUE), isFailure());
+		assertThat(FAILED_RESULT.combine(FAILED_RESULT), isFailure());
+		assertThat(THE_RESULT.combine(FAILED_RESULT), isFailure());
+		assertThat(RESULT_WITHOUT_VALUE.combine(FAILED_RESULT), isFailure());
 	}
 }
