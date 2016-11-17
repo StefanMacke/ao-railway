@@ -3,8 +3,8 @@ package net.aokv.railway.result;
 import java.util.Optional;
 
 /**
- * Result of a computation or any other action. Can be successful and contain a value or failed and
- * contain an error (Message).
+ * Result of a computation or any other action that contains value of type TSuccess or a Message in
+ * case of a failure.
  *
  * @param <TSuccess> The type of the contained value.
  */

@@ -71,6 +71,30 @@ public class FailedResultShould
 	}
 
 	@Test
+	public void runErrorConsumerOnFailure()
+	{
+		final Container c = new Container("");
+		assertThat(THE_RESULT.onFailure(e -> c.setString(e.getText())), isFailure());
+		assertThat(c.getString(), is(THE_ERROR.getText()));
+	}
+
+	@Test
+	public void runErrorConsumerOnFailureIfPredicateMatches()
+	{
+		final Container c = new Container("");
+		assertThat(THE_RESULT.onFailure(e -> true, e -> c.setString(e.getText())), isFailure());
+		assertThat(c.getString(), is(THE_ERROR.getText()));
+	}
+
+	@Test
+	public void notRunErrorConsumerOnFailureIfPredicateDoesNotMatch()
+	{
+		final Container c = new Container("");
+		assertThat(THE_RESULT.onFailure(e -> false, e -> c.setString(e.getText())), isFailure());
+		assertThat(c.getString(), is(""));
+	}
+
+	@Test
 	public void runConsumerOnBoth()
 	{
 		final Container c = new Container("");

@@ -7,8 +7,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Result of a computation or any other action. Can be successful and contain a value or failed and
- * contain an error (TFailure).
+ * Result of a computation or any other action. Can be successful and contain a value (TSuccess) or
+ * failed and contain an error (TFailure).
  *
  * @param <TSuccess> The type of the contained value.
  * @param <TFailure> The type of the error object in case of a failure.
@@ -16,12 +16,6 @@ import java.util.function.Supplier;
 @SuppressWarnings("unchecked")
 public abstract class AbstractResult<TSuccess, TFailure>
 {
-	protected abstract <TResult extends AbstractResult<Void, TFailure>> TResult emptyResult();
-
-	protected abstract <TResult extends AbstractResult<T, TFailure>, T> TResult successfulResult(T value);
-
-	protected abstract <TResult extends AbstractResult<T, TFailure>, T> TResult failedResult(TFailure error);
-
 	private final Optional<TSuccess> value;
 	private final Optional<TFailure> error;
 
@@ -30,6 +24,12 @@ public abstract class AbstractResult<TSuccess, TFailure>
 		this.value = Optional.ofNullable(value);
 		this.error = Optional.ofNullable(error);
 	}
+
+	protected abstract <TResult extends AbstractResult<Void, TFailure>> TResult emptyResult();
+
+	protected abstract <TResult extends AbstractResult<T, TFailure>, T> TResult successfulResult(T value);
+
+	protected abstract <TResult extends AbstractResult<T, TFailure>, T> TResult failedResult(TFailure error);
 
 	protected static void assertParameterNotNull(final Object parameter, final String name)
 	{
@@ -206,6 +206,38 @@ public abstract class AbstractResult<TSuccess, TFailure>
 		if (isFailure())
 		{
 			function.run();
+		}
+		return (TResult) this;
+	}
+
+	/**
+	 * Runs the given function, if the Result is failed.
+	 *
+	 * @param function The function to run.
+	 * @return The current Result.
+	 */
+	public <TResult extends AbstractResult<?, TFailure>> TResult onFailure(final Consumer<TFailure> function)
+	{
+		if (isFailure())
+		{
+			function.accept(getError());
+		}
+		return (TResult) this;
+	}
+
+	/**
+	 * Runs the given function, if the Result is failed and the error matches the given predicate.
+	 *
+	 * @param predicate The predicate to check the error with.
+	 * @param function The function to run.
+	 * @return The current Result.
+	 */
+	public <TResult extends AbstractResult<?, TFailure>> TResult onFailure(
+			final Predicate<TFailure> predicate, final Consumer<TFailure> function)
+	{
+		if (isFailure() && predicate.test(getError()))
+		{
+			function.accept(getError());
 		}
 		return (TResult) this;
 	}

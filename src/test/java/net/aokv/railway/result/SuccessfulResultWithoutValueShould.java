@@ -49,6 +49,21 @@ public class SuccessfulResultWithoutValueShould
 	}
 
 	@Test
+	public void notRunErrorConsumerOnFailure()
+	{
+		final Container c = new Container("");
+		assertThat(THE_RESULT.onFailure(e -> c.setString(e.getText())), isSuccess());
+		assertThat(c.getString(), is(""));
+	}
+
+	public void notRunErrorConsumerWithPredicateOnFailure()
+	{
+		final Container c = new Container("");
+		THE_RESULT.onFailure(e -> e.getCode() == 1, e -> c.setString(e.getText()));
+		assertThat(c.getString(), is(""));
+	}
+
+	@Test
 	public void runConsumerOnBoth()
 	{
 		final Container c = new Container("");

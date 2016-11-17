@@ -63,6 +63,20 @@ public class SuccessfulResultShould
 		assertThat(c.getString(), is(""));
 	}
 
+	public void notRunErrorConsumerOnFailure()
+	{
+		final Container c = new Container("");
+		THE_RESULT.onFailure(e -> c.setString(e.getText()));
+		assertThat(c.getString(), is(""));
+	}
+
+	public void notRunErrorConsumerWithPredicateOnFailure()
+	{
+		final Container c = new Container("");
+		THE_RESULT.onFailure(e -> e.getCode() == 1, e -> c.setString(e.getText()));
+		assertThat(c.getString(), is(""));
+	}
+
 	@Test
 	public void runConsumerOnSuccess()
 	{
