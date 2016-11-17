@@ -1,6 +1,5 @@
 package net.aokv.railway.result;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -9,111 +8,55 @@ import java.util.function.Supplier;
 
 /**
  * Result of a computation or any other action. Can be successful and contain a value or failed and
- * contain an error (Message).
+ * contain an error (TFailure).
  *
  * @param <TSuccess> The type of the contained value.
+ * @param <TFailure> The type of the error object in case of a failure.
  */
-public final class Result<TSuccess>
+public abstract class AbstractResult<TSuccess, TFailure>
 {
-	private final Optional<TSuccess> value;
-	private final Optional<Message> error;
-
-	/**
-	 * Creates a new Result with the given error message.
-	 *
-	 * @param error The error message.
-	 * @return Failed Result.
-	 */
-	public static <T> Result<T> withError(final Message error)
+	public class EmptyResult extends AbstractResult<Void, TFailure>
 	{
-		assertParameterNotNull(error, "Error");
-		return new Result<T>(null, error);
-	}
-
-	/**
-	 * Creates a new Result with an error message from the given text.
-	 *
-	 * @param error The error message.
-	 * @return Failed Result.
-	 */
-	public static <T> Result<T> withError(final String error)
-	{
-		assertParameterNotNull(error, "Error");
-		return withError(Message.withError(error));
-	}
-
-	/**
-	 * Creates a new Result without a value.
-	 *
-	 * @return Successful Result.
-	 */
-	public static Result<Void> withoutValue()
-	{
-		return new Result<Void>();
-	}
-
-	/**
-	 * Creates a successful Result with the given value. The value may not be null.
-	 *
-	 * @param value The value.
-	 * @return Successful Result with the given value.
-	 * @throws IllegalArgumentException If value is null.
-	 */
-	public static <T> Result<T> withValue(final T value)
-	{
-		assertParameterNotNull(value, "Value");
-		return new Result<T>(value, null);
-	}
-
-	/**
-	 * Creates a Result with an optional value. If the value is null, a failed Result will be
-	 * created.
-	 *
-	 * @param value The value.
-	 * @param error The error to set, if value is null.
-	 * @return Successful Result with value or failed Result.
-	 */
-	public static <T> Result<T> with(final T value, final Message error)
-	{
-		return Result.with(Optional.ofNullable(value), error);
-	}
-
-	/**
-	 * Creates a Result with an optional value. If the value is null or an empty Optional, a failed
-	 * Result is created.
-	 *
-	 * @param valueOrNothing The optional value.
-	 * @param error The error to set, if value is null or an empty Optional.
-	 * @return Successful Result with value or failed Result.
-	 */
-	public static <T> Result<T> with(final Optional<T> valueOrNothing, final Message error)
-	{
-		if (valueOrNothing == null || !valueOrNothing.isPresent())
+		public EmptyResult()
 		{
-			return Result.withError(error);
+			super(null, null);
 		}
-		return Result.withValue(valueOrNothing.get());
 	}
 
-	private static void assertParameterNotNull(final Object parameter, final String name)
+	public class SuccessfulResult<T> extends AbstractResult<T, TFailure>
+	{
+		public SuccessfulResult(final T value)
+		{
+			super(value, null);
+			assertParameterNotNull(value, "Value");
+		}
+	}
+
+	public class FailedResult<T> extends AbstractResult<T, TFailure>
+	{
+		public FailedResult(final TFailure error)
+		{
+			super(null, error);
+			assertParameterNotNull(error, "Error");
+		}
+	}
+
+	private final Optional<TSuccess> value;
+	private final Optional<TFailure> error;
+
+	protected AbstractResult(final TSuccess value, final TFailure error)
+	{
+		this.value = Optional.ofNullable(value);
+		this.error = Optional.ofNullable(error);
+	}
+
+	protected void assertParameterNotNull(final Object parameter, final String name)
 	{
 		if (parameter == null)
 		{
 			throw new IllegalArgumentException(
 					String.format("%s may not be null.", name));
 		}
-	}
-
-	private Result()
-	{
-		value = Optional.empty();
-		error = Optional.empty();
-	}
-
-	private Result(final TSuccess value, final Message error)
-	{
-		this.value = Optional.ofNullable(value);
-		this.error = Optional.ofNullable(error);
 	}
 
 	/**
@@ -162,7 +105,7 @@ public final class Result<TSuccess>
 	 * @return The error.
 	 * @throws SuccessfulResultHasNoErrorException If Result is successful.
 	 */
-	public Message getError()
+	public TFailure getError()
 	{
 		if (isSuccess())
 		{
@@ -214,13 +157,17 @@ public final class Result<TSuccess>
 	 * @param results The Results to combine.
 	 * @return Result of the combination.
 	 */
-	@SafeVarargs
-	public static Result<?> combine(final Result<?>... results)
+	public AbstractResult<?, TFailure> combine(final AbstractResult<?, TFailure> otherResult)
 	{
-		return Arrays.stream(results)
-				.filter(result -> result.isFailure())
-				.findFirst()
-				.orElse(Result.withoutValue());
+		if (isFailure())
+		{
+			return this;
+		}
+		if (otherResult.isFailure())
+		{
+			return otherResult;
+		}
+		return new EmptyResult();
 	}
 
 	/**
@@ -229,11 +176,11 @@ public final class Result<TSuccess>
 	 * @param function The function to run.
 	 * @return Result of the function.
 	 */
-	public <T> Result<T> onSuccess(final Supplier<Result<T>> function)
+	public <T> AbstractResult<T, TFailure> onSuccess(final Supplier<AbstractResult<T, TFailure>> function)
 	{
 		if (isFailure())
 		{
-			return Result.withError(getError());
+			return new FailedResult<T>(getError());
 		}
 		return function.get();
 	}
@@ -245,9 +192,9 @@ public final class Result<TSuccess>
 	 * @param clazz The return value of the function.
 	 * @return Return value of the function wrapped in a Result.
 	 */
-	public <T> Result<T> onSuccess(final Supplier<T> function, final Class<T> clazz)
+	public <T> AbstractResult<T, TFailure> onSuccess(final Supplier<T> function, final Class<T> clazz)
 	{
-		return onSuccess(() -> Result.withValue(function.get()));
+		return onSuccess(() -> new SuccessfulResult<T>(function.get()));
 	}
 
 	/**
@@ -256,7 +203,7 @@ public final class Result<TSuccess>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public Result<TSuccess> onSuccess(final Consumer<TSuccess> function)
+	public AbstractResult<TSuccess, TFailure> onSuccess(final Consumer<TSuccess> function)
 	{
 		if (!isFailure())
 		{
@@ -271,7 +218,7 @@ public final class Result<TSuccess>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public Result<?> onFailure(final Runnable function)
+	public AbstractResult<?, TFailure> onFailure(final Runnable function)
 	{
 		if (isFailure())
 		{
@@ -286,7 +233,7 @@ public final class Result<TSuccess>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public Result<TSuccess> onBoth(final Consumer<Result<TSuccess>> function)
+	public AbstractResult<?, ?> onBoth(final Consumer<AbstractResult<TSuccess, TFailure>> function)
 	{
 		function.accept(this);
 		return this;
@@ -300,7 +247,7 @@ public final class Result<TSuccess>
 	 * @return Result with checked value or failed Result.
 	 * @throws EmptyResultHasNoValueException If the Result does not have a value.
 	 */
-	public Result<TSuccess> ensure(final Predicate<TSuccess> predicate, final Message error)
+	public AbstractResult<TSuccess, TFailure> ensure(final Predicate<TSuccess> predicate, final TFailure error)
 	{
 		if (isFailure())
 		{
@@ -310,7 +257,7 @@ public final class Result<TSuccess>
 		{
 			if (!predicate.test(getValue()))
 			{
-				return Result.withError(error);
+				return new FailedResult<TSuccess>(error);
 			}
 		}
 		catch (final EmptyResultHasNoValueException exception)
@@ -319,7 +266,7 @@ public final class Result<TSuccess>
 		}
 		catch (final Exception exception)
 		{
-			return Result.withError(error);
+			return new FailedResult<TSuccess>(error);
 		}
 		return this;
 	}
@@ -331,11 +278,11 @@ public final class Result<TSuccess>
 	 * @param function A function that returns a <code>Result&lt;Result&lt;T&gt;&gt;</code>.
 	 * @return The extracted <code>Result&lt;T&gt;</code>.
 	 */
-	public <T> Result<T> flatMap(final Function<TSuccess, Result<T>> function)
+	public <T> AbstractResult<T, TFailure> flatMap(final Function<TSuccess, AbstractResult<T, TFailure>> function)
 	{
 		if (isFailure())
 		{
-			return Result.withError(getError());
+			return new FailedResult<>(getError());
 		}
 		return function.apply(getValue());
 	}
@@ -346,9 +293,9 @@ public final class Result<TSuccess>
 	 * @param function A function that returns the new value.
 	 * @return The Result of the function's value or a failed Result.
 	 */
-	public <T> Result<T> map(final Function<TSuccess, T> function)
+	public <T> AbstractResult<T, TFailure> map(final Function<TSuccess, T> function)
 	{
-		return flatMap(function.andThen(value -> Result.withValue(value)));
+		return flatMap(function.andThen(value -> new SuccessfulResult<T>(value)));
 	}
 
 	/**
@@ -358,22 +305,22 @@ public final class Result<TSuccess>
 	 * @param error Error if inner value cannot be extracted.
 	 * @return Result of the inner value of the Optional or a failed Result.
 	 */
-	public <T> Result<T> ifValueIsPresent(final Class<T> innerValue, final Message error)
+	public <T> AbstractResult<T, TFailure> ifValueIsPresent(final Class<T> innerValue, final TFailure error)
 	{
 		if (isFailure())
 		{
-			return Result.withError(getError());
+			return new FailedResult<T>(getError());
 		}
 		if (!(getValue() instanceof Optional))
 		{
-			return Result.withError(error);
+			return new FailedResult<T>(error);
 		}
 		@SuppressWarnings("unchecked")
 		final Optional<T> optional = (Optional<T>) getValue();
 		if (!optional.isPresent())
 		{
-			return Result.withError(error);
+			return new FailedResult<T>(error);
 		}
-		return Result.withValue(optional.get());
+		return new SuccessfulResult<T>(optional.get());
 	}
 }
