@@ -122,7 +122,7 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * </pre>
 	 *
 	 * <pre>
-	 * Result (Failure: ERROR (1, withError, 0): "the error" (Details: "No details"))
+	 * Result (Error: The error)
 	 * </pre>
 	 *
 	 * @return The Result as a string.
@@ -143,7 +143,7 @@ public abstract class AbstractResult<TSuccess, TFailure>
 		}
 		else
 		{
-			result.append("Failure: ");
+			result.append("Error: ");
 			result.append(getError());
 		}
 		result.append(')');
