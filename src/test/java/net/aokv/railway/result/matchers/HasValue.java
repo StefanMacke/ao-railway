@@ -3,9 +3,9 @@ package net.aokv.railway.result.matchers;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import net.aokv.railway.result.AbstractResult;
+import net.aokv.railway.result.Result;
 
-public class HasValue<TSuccess, TFailure> extends TypeSafeDiagnosingMatcher<AbstractResult<TSuccess, TFailure>>
+public class HasValue<TSuccess, TFailure> extends TypeSafeDiagnosingMatcher<Result<TSuccess, TFailure>>
 {
 	private final TSuccess value;
 
@@ -23,7 +23,7 @@ public class HasValue<TSuccess, TFailure> extends TypeSafeDiagnosingMatcher<Abst
 	}
 
 	@Override
-	protected boolean matchesSafely(final AbstractResult<TSuccess, TFailure> result, final Description description)
+	protected boolean matchesSafely(final Result<TSuccess, TFailure> result, final Description description)
 	{
 		description.appendText("was ")
 				.appendValue(result.toString());

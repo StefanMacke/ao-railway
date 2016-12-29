@@ -15,8 +15,8 @@ public class SuccessfulResultShould
 	private static final String OTHER_VALUE = "Other value";
 	private static final Message THE_ERROR = Message.withError("The error");
 
-	private static final AbstractResult<String, Message> THE_RESULT = AbstractResult.withValue(THE_VALUE);
-	private static final AbstractResult<String, Message> OTHER_RESULT = AbstractResult.withValue(OTHER_VALUE);
+	private static final Result<String, Message> THE_RESULT = Result.withValue(THE_VALUE);
+	private static final Result<String, Message> OTHER_RESULT = Result.withValue(OTHER_VALUE);
 
 	@Test
 	public void beSuccessful()
@@ -48,7 +48,7 @@ public class SuccessfulResultShould
 		assertThat(
 				THE_RESULT.onSuccess(() ->
 				{
-					return AbstractResult.withValue("new value");
+					return Result.withValue("new value");
 				}), hasValue("new value"));
 		assertThat(
 				THE_RESULT
@@ -98,7 +98,7 @@ public class SuccessfulResultShould
 	@Test
 	public void checkItsValue()
 	{
-		AbstractResult<String, Message> result = THE_RESULT
+		Result<String, Message> result = THE_RESULT
 				.ensure(value -> value.length() > THE_VALUE.length() - 1, THE_ERROR);
 		assertThat(result, isSuccess());
 		assertThat(result, hasValue(THE_VALUE));
@@ -112,7 +112,7 @@ public class SuccessfulResultShould
 	@Test
 	public void checkItsValueRaisingAnException()
 	{
-		final AbstractResult<String, Message> result = THE_RESULT
+		final Result<String, Message> result = THE_RESULT
 				.ensure(value -> Long.parseLong(value) > 1, THE_ERROR);
 		assertThat(result, isFailure());
 		assertThat(result, isFailureWithMessage(THE_ERROR));
@@ -131,7 +131,7 @@ public class SuccessfulResultShould
 		assertThat(
 				THE_RESULT.flatMap(w -> OTHER_RESULT),
 				hasValue(OTHER_VALUE));
-		assertThat(THE_RESULT.flatMap(value -> AbstractResult.withValue(value.length())),
+		assertThat(THE_RESULT.flatMap(value -> Result.withValue(value.length())),
 				hasValue(THE_VALUE.length()));
 	}
 }

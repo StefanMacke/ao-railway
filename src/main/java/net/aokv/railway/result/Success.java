@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class Success<TSuccess, TFailure> extends AbstractResult<TSuccess, TFailure>
+public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 {
 	private final Optional<TSuccess> value;
 
@@ -53,7 +53,7 @@ public class Success<TSuccess, TFailure> extends AbstractResult<TSuccess, TFailu
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <TResult extends AbstractResult<?, TFailure>> TResult combine(
+	public <TResult extends Result<?, TFailure>> TResult combine(
 			final TResult otherResult)
 	{
 		if (otherResult.isFailure())
@@ -64,7 +64,7 @@ public class Success<TSuccess, TFailure> extends AbstractResult<TSuccess, TFailu
 	}
 
 	@Override
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult onSuccess(
+	public <TResult extends Result<T, TFailure>, T> TResult onSuccess(
 			final Supplier<TResult> function)
 	{
 		return function.get();
@@ -72,7 +72,7 @@ public class Success<TSuccess, TFailure> extends AbstractResult<TSuccess, TFailu
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult onSuccess(
+	public <TResult extends Result<T, TFailure>, T> TResult onSuccess(
 			final Supplier<T> function, final Class<T> clazz)
 	{
 		return onSuccess(() -> (TResult) new Success<>(function.get()));
@@ -80,7 +80,7 @@ public class Success<TSuccess, TFailure> extends AbstractResult<TSuccess, TFailu
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <TResult extends AbstractResult<TSuccess, TFailure>> TResult ensure(
+	public <TResult extends Result<TSuccess, TFailure>> TResult ensure(
 			final Predicate<TSuccess> predicate, final TFailure error)
 	{
 		try
@@ -102,21 +102,21 @@ public class Success<TSuccess, TFailure> extends AbstractResult<TSuccess, TFailu
 	}
 
 	@Override
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult flatMap(final Function<TSuccess, TResult> function)
+	public <TResult extends Result<T, TFailure>, T> TResult flatMap(final Function<TSuccess, TResult> function)
 	{
 		return function.apply(getValue());
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult map(final Function<TSuccess, T> function)
+	public <TResult extends Result<T, TFailure>, T> TResult map(final Function<TSuccess, T> function)
 	{
 		return flatMap(function.andThen(value -> (TResult) new Success<>(value)));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult ifValueIsPresent(
+	public <TResult extends Result<T, TFailure>, T> TResult ifValueIsPresent(
 			final Class<T> innerValue, final TFailure error)
 	{
 		if (!(getValue() instanceof Optional))
