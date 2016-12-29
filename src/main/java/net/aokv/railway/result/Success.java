@@ -53,42 +53,39 @@ public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<?, TFailure>> TResult combine(
-			final TResult otherResult)
+	public Result<?, TFailure> combine(
+			final Result<?, TFailure> otherResult)
 	{
 		if (otherResult.isFailure())
 		{
 			return otherResult;
 		}
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	public <TResult extends Result<T, TFailure>, T> TResult onSuccess(
-			final Supplier<TResult> function)
+	public <T> Result<T, TFailure> onSuccess(
+			final Supplier<Result<T, TFailure>> function)
 	{
 		return function.get();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<T, TFailure>, T> TResult onSuccess(
+	public <T> Result<T, TFailure> onSuccess(
 			final Supplier<T> function, final Class<T> clazz)
 	{
-		return onSuccess(() -> (TResult) new Success<>(function.get()));
+		return onSuccess(() -> new Success<>(function.get()));
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<TSuccess, TFailure>> TResult ensure(
+	public Result<TSuccess, TFailure> ensure(
 			final Predicate<TSuccess> predicate, final TFailure error)
 	{
 		try
 		{
 			if (!predicate.test(getValue()))
 			{
-				return (TResult) new Failure<>(error);
+				return new Failure<>(error);
 			}
 		}
 		catch (final EmptyResultHasNoValueException exception)
@@ -97,68 +94,63 @@ public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 		}
 		catch (final Exception exception)
 		{
-			return (TResult) new Failure<>(error);
+			return new Failure<>(error);
 		}
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	public <TResult extends Result<T, TFailure>, T> TResult flatMap(final Function<TSuccess, TResult> function)
+	public <T> Result<T, TFailure> flatMap(final Function<TSuccess, Result<T, TFailure>> function)
 	{
 		return function.apply(getValue());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<T, TFailure>, T> TResult map(final Function<TSuccess, T> function)
+	public <T> Result<T, TFailure> map(final Function<TSuccess, T> function)
 	{
-		return flatMap(function.andThen(value -> (TResult) new Success<>(value)));
+		return flatMap(function.andThen(value -> new Success<>(value)));
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<T, TFailure>, T> TResult ifValueIsPresent(
+	public <T> Result<T, TFailure> ifValueIsPresent(
 			final Class<T> innerValue, final TFailure error)
 	{
 		if (!(getValue() instanceof Optional))
 		{
-			return (TResult) new Failure<>(error);
+			return new Failure<>(error);
 		}
+		@SuppressWarnings("unchecked")
 		final Optional<T> optional = (Optional<T>) getValue();
 		if (!optional.isPresent())
 		{
-			return (TResult) new Failure<>(error);
+			return new Failure<>(error);
 		}
-		return (TResult) new Success<>(optional.get());
+		return new Success<>(optional.get());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<TSuccess, TFailure>> TResult onSuccess(final Consumer<TSuccess> function)
+	public Result<TSuccess, TFailure> onSuccess(final Consumer<TSuccess> function)
 	{
 		function.accept(getValue());
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<?, TFailure>> TResult onFailure(final Runnable function)
+	public Result<?, TFailure> onFailure(final Runnable function)
 	{
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<?, TFailure>> TResult onFailure(final Consumer<TFailure> function)
+	public Result<?, TFailure> onFailure(final Consumer<TFailure> function)
 	{
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<?, TFailure>> TResult onFailure(
+	public Result<?, TFailure> onFailure(
 			final Predicate<TFailure> predicate, final Consumer<TFailure> function)
 	{
-		return (TResult) this;
+		return this;
 	}
 }

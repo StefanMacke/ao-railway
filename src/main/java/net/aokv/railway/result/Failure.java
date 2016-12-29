@@ -43,91 +43,82 @@ public class Failure<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<?, TFailure>> TResult combine(
-			final TResult otherResult)
+	public Result<?, TFailure> combine(
+			final Result<?, TFailure> otherResult)
 	{
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<T, TFailure>, T> TResult onSuccess(
-			final Supplier<TResult> function)
+	public <T> Result<T, TFailure> onSuccess(
+			final Supplier<Result<T, TFailure>> function)
 	{
-		return (TResult) this;
+		return new Failure<>(getError());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<T, TFailure>, T> TResult onSuccess(
+	public <T> Result<T, TFailure> onSuccess(
 			final Supplier<T> function, final Class<T> clazz)
 	{
-		return (TResult) this;
+		return new Failure<>(getError());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<TSuccess, TFailure>> TResult ensure(
+	public Result<TSuccess, TFailure> ensure(
 			final Predicate<TSuccess> predicate, final TFailure error)
 	{
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<T, TFailure>, T> TResult flatMap(final Function<TSuccess, TResult> function)
+	public <T> Result<T, TFailure> flatMap(
+			final Function<TSuccess, Result<T, TFailure>> function)
+
 	{
-		return (TResult) this;
+		return new Failure<>(getError());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<T, TFailure>, T> TResult map(final Function<TSuccess, T> function)
+	public <T> Result<T, TFailure> map(final Function<TSuccess, T> function)
 	{
-		return (TResult) this;
+		return new Failure<>(getError());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<T, TFailure>, T> TResult ifValueIsPresent(
+	public <T> Result<T, TFailure> ifValueIsPresent(
 			final Class<T> innerValue, final TFailure error)
 	{
-		return (TResult) new Failure<>(getError());
+		return new Failure<>(getError());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<TSuccess, TFailure>> TResult onSuccess(final Consumer<TSuccess> function)
+	public Result<TSuccess, TFailure> onSuccess(final Consumer<TSuccess> function)
 	{
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<?, TFailure>> TResult onFailure(final Runnable function)
+	public Result<?, TFailure> onFailure(final Runnable function)
 	{
 		function.run();
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<?, TFailure>> TResult onFailure(final Consumer<TFailure> function)
+	public Result<?, TFailure> onFailure(final Consumer<TFailure> function)
 	{
 		function.accept(getError());
-		return (TResult) this;
+		return this;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <TResult extends Result<?, TFailure>> TResult onFailure(
+	public Result<?, TFailure> onFailure(
 			final Predicate<TFailure> predicate, final Consumer<TFailure> function)
 	{
 		if (predicate.test(getError()))
 		{
 			function.accept(getError());
 		}
-		return (TResult) this;
+		return this;
 	}
 }
