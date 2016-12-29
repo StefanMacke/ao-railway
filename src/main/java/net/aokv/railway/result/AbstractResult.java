@@ -16,20 +16,87 @@ import java.util.function.Supplier;
 @SuppressWarnings("unchecked")
 public abstract class AbstractResult<TSuccess, TFailure>
 {
-	private final Optional<TSuccess> value;
-	private final Optional<TFailure> error;
-
-	protected AbstractResult(final TSuccess value, final TFailure error)
+	/**
+	 * Creates a new Result with the given error message.
+	 *
+	 * @param error The error message.
+	 * @return Failed Result.
+	 */
+	public static <TSuccess> AbstractResult<TSuccess, Message> withError(final Message error)
 	{
-		this.value = Optional.ofNullable(value);
-		this.error = Optional.ofNullable(error);
+		assertParameterNotNull(error, "Error");
+		return new Failure<>(error);
 	}
 
-	protected abstract <TResult extends AbstractResult<Void, TFailure>> TResult emptyResult();
+	/**
+	 * Creates a new Result with an error from the given text.
+	 *
+	 * @param error The error message.
+	 * @return Failed Result.
+	 */
+	public static <TSuccess> AbstractResult<TSuccess, Message> withError(final String error)
+	{
+		assertParameterNotNull(error, "Error");
+		return withError(Message.withError(error));
+	}
 
-	protected abstract <TResult extends AbstractResult<T, TFailure>, T> TResult successfulResult(T value);
+	/**
+	 * Creates a new Result without a value.
+	 *
+	 * @return Successful Result.
+	 */
+	public static <TFailure> AbstractResult<Void, TFailure> withoutValue()
+	{
+		return new Success<Void, TFailure>(null);
+	}
 
-	protected abstract <TResult extends AbstractResult<T, TFailure>, T> TResult failedResult(TFailure error);
+	/**
+	 * Creates a successful Result with the given value. The value may not be null.
+	 *
+	 * @param value The value.
+	 * @return Successful Result with the given value.
+	 * @throws IllegalArgumentException If value is null.
+	 */
+	public static <TSuccess, TFailure> AbstractResult<TSuccess, TFailure> withValue(final TSuccess value)
+	{
+		assertParameterNotNull(value, "Value");
+		return new Success<TSuccess, TFailure>(value);
+	}
+
+	/**
+	 * Creates a Result with an optional value. If the value is null, a failed Result will be
+	 * created.
+	 *
+	 * @param value The value.
+	 * @param error The error to set, if value is null.
+	 * @return Successful Result with value or failed Result.
+	 */
+	public static <TSuccess> AbstractResult<TSuccess, Message> with(final TSuccess value, final Message error)
+	{
+		if (value != null)
+		{
+			return withValue(value);
+		}
+		return withError(error);
+	}
+
+	/**
+	 * Creates a Result with an optional value. If the value is null or an empty Optional, a failed
+	 * Result is created.
+	 *
+	 * @param valueOrNothing The optional value.
+	 * @param error The error to set, if value is null or an empty Optional.
+	 * @return Successful Result with value or failed Result.
+	 */
+	public static <TSuccess> AbstractResult<TSuccess, Message> with(final Optional<TSuccess> valueOrNothing,
+			final Message error)
+	{
+		if (valueOrNothing == null || !valueOrNothing.isPresent())
+		{
+			return withError(error);
+		}
+		return withValue(valueOrNothing.get());
+	}
 
 	protected static void assertParameterNotNull(final Object parameter, final String name)
 	{
@@ -45,17 +112,14 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 *
 	 * @return Whether the Result is failed.
 	 */
-	public boolean isFailure()
-	{
-		return error.isPresent();
-	}
+	public abstract boolean isFailure();
 
 	/**
 	 * Checks whether the Result is successful.
 	 *
 	 * @return Whether the Result is successful.
 	 */
-	public boolean isSuccess()
+	public final boolean isSuccess()
 	{
 		return !isFailure();
 	}
@@ -67,18 +131,7 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @throws FailedResultHasNoValueException If Result is failed.
 	 * @throws EmptyResultHasNoValueException If Result does not have a value.
 	 */
-	public TSuccess getValue()
-	{
-		if (isFailure())
-		{
-			throw new FailedResultHasNoValueException(getError());
-		}
-		if (!value.isPresent())
-		{
-			throw new EmptyResultHasNoValueException();
-		}
-		return value.get();
-	}
+	public abstract TSuccess getValue();
 
 	/**
 	 * Returns the Result's error.
@@ -86,14 +139,7 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @return The error.
 	 * @throws SuccessfulResultHasNoErrorException If Result is successful.
 	 */
-	public TFailure getError()
-	{
-		if (isSuccess())
-		{
-			throw new SuccessfulResultHasNoErrorException();
-		}
-		return error.get();
-	}
+	public abstract TFailure getError();
 
 	/**
 	 * Returns the Result as a string.
@@ -109,27 +155,7 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @return The Result as a string.
 	 */
 	@Override
-	public String toString()
-	{
-		final StringBuilder result = new StringBuilder("Result (");
-		if (isSuccess())
-		{
-			result.append("Success");
-			if (value.isPresent())
-			{
-				result.append(" with value <");
-				result.append(getValue());
-				result.append('>');
-			}
-		}
-		else
-		{
-			result.append("Error: ");
-			result.append(getError());
-		}
-		result.append(')');
-		return result.toString();
-	}
+	public abstract String toString();
 
 	/**
 	 * Combines multiple Results. Returns the first failed Result or a successful Result without a
@@ -138,18 +164,7 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param results The Results to combine.
 	 * @return Result of the combination.
 	 */
-	public <TResult extends AbstractResult<?, TFailure>> TResult combine(final TResult otherResult)
-	{
-		if (isFailure())
-		{
-			return (TResult) this;
-		}
-		if (otherResult.isFailure())
-		{
-			return otherResult;
-		}
-		return (TResult) emptyResult();
-	}
+	public abstract <TResult extends AbstractResult<?, TFailure>> TResult combine(final TResult otherResult);
 
 	/**
 	 * Runs the given function, if the Result is successful.
@@ -157,15 +172,8 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return Result of the function.
 	 */
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult onSuccess(
-			final Supplier<TResult> function)
-	{
-		if (isFailure())
-		{
-			return failedResult(getError());
-		}
-		return function.get();
-	}
+	public abstract <TResult extends AbstractResult<T, TFailure>, T> TResult onSuccess(
+			final Supplier<TResult> function);
 
 	/**
 	 * Runs the given function and wraps its return value in a Result, if the Result is successful.
@@ -174,11 +182,8 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param clazz The return value of the function.
 	 * @return Return value of the function wrapped in a Result.
 	 */
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult onSuccess(
-			final Supplier<T> function, final Class<T> clazz)
-	{
-		return onSuccess(() -> successfulResult(function.get()));
-	}
+	public abstract <TResult extends AbstractResult<T, TFailure>, T> TResult onSuccess(
+			final Supplier<T> function, final Class<T> clazz);
 
 	/**
 	 * Runs the given function, if the Result is successful.
@@ -263,30 +268,8 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @return Result with checked value or failed Result.
 	 * @throws EmptyResultHasNoValueException If the Result does not have a value.
 	 */
-	public <TResult extends AbstractResult<TSuccess, TFailure>> TResult ensure(final Predicate<TSuccess> predicate,
-			final TFailure error)
-	{
-		if (isFailure())
-		{
-			return (TResult) this;
-		}
-		try
-		{
-			if (!predicate.test(getValue()))
-			{
-				return failedResult(error);
-			}
-		}
-		catch (final EmptyResultHasNoValueException exception)
-		{
-			throw exception;
-		}
-		catch (final Exception exception)
-		{
-			return failedResult(error);
-		}
-		return (TResult) this;
-	}
+	public abstract <TResult extends AbstractResult<TSuccess, TFailure>> TResult ensure(
+			final Predicate<TSuccess> predicate, final TFailure error);
 
 	/**
 	 * Extracts a <code>Result&lt;T&gt;</code> from a <code>Result&lt;Result&lt;T&gt;&gt;</code>, if
@@ -295,14 +278,8 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param function A function that returns a <code>Result&lt;Result&lt;T&gt;&gt;</code>.
 	 * @return The extracted <code>Result&lt;T&gt;</code>.
 	 */
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult flatMap(final Function<TSuccess, TResult> function)
-	{
-		if (isFailure())
-		{
-			return failedResult(getError());
-		}
-		return function.apply(getValue());
-	}
+	public abstract <TResult extends AbstractResult<T, TFailure>, T> TResult flatMap(
+			final Function<TSuccess, TResult> function);
 
 	/**
 	 * Maps the Result to a Result with another value, if the Result is successful.
@@ -310,10 +287,8 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param function A function that returns the new value.
 	 * @return The Result of the function's value or a failed Result.
 	 */
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult map(final Function<TSuccess, T> function)
-	{
-		return flatMap(function.andThen(value -> successfulResult(value)));
-	}
+	public abstract <TResult extends AbstractResult<T, TFailure>, T> TResult map(
+			final Function<TSuccess, T> function);
 
 	/**
 	 * Extracts the inner value from an Optional value of the Result.
@@ -322,22 +297,6 @@ public abstract class AbstractResult<TSuccess, TFailure>
 	 * @param error Error if inner value cannot be extracted.
 	 * @return Result of the inner value of the Optional or a failed Result.
 	 */
-	public <TResult extends AbstractResult<T, TFailure>, T> TResult ifValueIsPresent(
-			final Class<T> innerValue, final TFailure error)
-	{
-		if (isFailure())
-		{
-			return failedResult(getError());
-		}
-		if (!(getValue() instanceof Optional))
-		{
-			return failedResult(error);
-		}
-		final Optional<T> optional = (Optional<T>) getValue();
-		if (!optional.isPresent())
-		{
-			return failedResult(error);
-		}
-		return successfulResult(optional.get());
-	}
+	public abstract <TResult extends AbstractResult<T, TFailure>, T> TResult ifValueIsPresent(
+			final Class<T> innerValue, final TFailure error);
 }

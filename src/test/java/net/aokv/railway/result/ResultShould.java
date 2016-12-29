@@ -16,35 +16,35 @@ public class ResultShould
 	private static final String OTHER_VALUE = "Other value";
 	private static final Message THE_ERROR = Message.withError("The error");
 
-	private static final Result<String> THE_RESULT = Result.withValue(THE_VALUE);
-	private static final Result<String> OTHER_RESULT = Result.withValue(OTHER_VALUE);
-	private static final Result<String> FAILED_RESULT = Result.withError(THE_ERROR);
-	private static final Result<Void> RESULT_WITHOUT_VALUE = Result.withoutValue();
+	private static final AbstractResult<String, Message> THE_RESULT = AbstractResult.withValue(THE_VALUE);
+	private static final AbstractResult<String, Message> OTHER_RESULT = AbstractResult.withValue(OTHER_VALUE);
+	private static final AbstractResult<String, Message> FAILED_RESULT = AbstractResult.withError(THE_ERROR);
+	private static final AbstractResult<Void, Message> RESULT_WITHOUT_VALUE = AbstractResult.withoutValue();
 
 	@Test(expected = IllegalArgumentException.class)
 	public void notAcceptNullAsValue()
 	{
-		Result.withValue(null);
+		AbstractResult.withValue(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void notAcceptNullAsError()
 	{
 		final Message e = null;
-		Result.withError(e);
+		AbstractResult.withError(e);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void notAcceptNullAsErrorMessage()
 	{
 		final String e = null;
-		Result.withError(e);
+		AbstractResult.withError(e);
 	}
 
 	@Test
 	public void beCreatedFromOptional()
 	{
-		final Result<String> result = Result.with(Optional.of(THE_VALUE), THE_ERROR);
+		final AbstractResult<String, Message> result = AbstractResult.with(Optional.of(THE_VALUE), THE_ERROR);
 		assertThat(result, isSuccess());
 		assertThat(result, hasValue(THE_VALUE));
 	}
@@ -52,7 +52,7 @@ public class ResultShould
 	@Test
 	public void beCreatedFromEmptyOptional()
 	{
-		final Result<String> ergebnis = Result.with(Optional.empty(), THE_ERROR);
+		final AbstractResult<String, Message> ergebnis = AbstractResult.with(Optional.empty(), THE_ERROR);
 		assertThat(ergebnis, isFailure());
 		assertThat(ergebnis, isFailureWithMessage(THE_ERROR));
 	}
@@ -60,7 +60,7 @@ public class ResultShould
 	@Test
 	public void beCreatedFromValue()
 	{
-		final Result<String> result = Result.with(THE_VALUE, THE_ERROR);
+		final AbstractResult<String, Message> result = AbstractResult.with(THE_VALUE, THE_ERROR);
 		assertThat(result, isSuccess());
 		assertThat(result, hasValue(THE_VALUE));
 	}
@@ -68,7 +68,7 @@ public class ResultShould
 	@Test
 	public void beCreatedFromNonExistingValue()
 	{
-		final Result<String> ergebnis = Result.with(null, THE_ERROR);
+		final AbstractResult<String, Message> ergebnis = AbstractResult.with(null, THE_ERROR);
 		assertThat(ergebnis, isFailure());
 		assertThat(ergebnis, isFailureWithMessage(THE_ERROR));
 	}
@@ -77,7 +77,7 @@ public class ResultShould
 	public void beCreatedFromNonExistingOptional()
 	{
 		final Optional<String> o = null;
-		final Result<String> ergebnis = Result.with(o, THE_ERROR);
+		final AbstractResult<String, Message> ergebnis = AbstractResult.with(o, THE_ERROR);
 		assertThat(ergebnis, isFailure());
 		assertThat(ergebnis, isFailureWithMessage(THE_ERROR));
 	}
@@ -86,15 +86,15 @@ public class ResultShould
 	public void extractValueFromOptional()
 	{
 		assertThat(
-				Result.withValue(Optional.of("Value"))
+				AbstractResult.withValue(Optional.of("Value"))
 						.ifValueIsPresent(String.class, THE_ERROR),
 				hasValue("Value"));
 		assertThat(
-				Result.withValue(Optional.empty())
+				AbstractResult.withValue(Optional.empty())
 						.ifValueIsPresent(String.class, THE_ERROR),
 				isFailureWithMessage(THE_ERROR));
 		assertThat(
-				Result.withValue("NotAnOptional")
+				AbstractResult.withValue("NotAnOptional")
 						.ifValueIsPresent(String.class, THE_ERROR),
 				isFailureWithMessage(THE_ERROR));
 	}

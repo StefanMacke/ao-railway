@@ -13,7 +13,7 @@ import org.junit.Test;
 public class FailedResultShould
 {
 	private static final Message THE_ERROR = Message.withError("The error");
-	private static final Result<String> THE_RESULT = Result.withError(THE_ERROR);
+	private static final AbstractResult<String, Message> THE_RESULT = AbstractResult.withError(THE_ERROR);
 
 	@Test
 	public void beFailed()
@@ -44,7 +44,7 @@ public class FailedResultShould
 	{
 		assertThat(THE_RESULT.onSuccess(() ->
 		{
-			return Result.withValue("Success");
+			return AbstractResult.withValue("Success");
 		}), isFailureWithMessageText(THE_ERROR.getText()));
 
 		final Function<String, String> function = value -> value.toUpperCase();
@@ -105,7 +105,7 @@ public class FailedResultShould
 	@Test
 	public void notCheckItsValue()
 	{
-		final Result<String> result = THE_RESULT
+		final AbstractResult<String, Message> result = THE_RESULT
 				.ensure(value -> value.length() > 1, Message.withError("Error"));
 		assertThat(result, isFailure());
 		assertThat(result, isFailureWithMessage(THE_ERROR));
@@ -121,7 +121,7 @@ public class FailedResultShould
 	@Test
 	public void notFlatMapItsValue()
 	{
-		assertThat(THE_RESULT.flatMap(value -> Result.withValue("Value")),
+		assertThat(THE_RESULT.flatMap(value -> AbstractResult.withValue("Value")),
 				isFailureWithMessage(THE_ERROR));
 	}
 

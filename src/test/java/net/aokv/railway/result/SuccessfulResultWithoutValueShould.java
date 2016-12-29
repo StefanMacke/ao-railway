@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class SuccessfulResultWithoutValueShould
 {
-	private static final Result<Void> THE_RESULT = Result.withoutValue();
+	private static final AbstractResult<Void, Message> THE_RESULT = AbstractResult.withoutValue();
 	private static final Message THE_ERROR = Message.withError("The error");
 
 	@Test
@@ -36,7 +36,7 @@ public class SuccessfulResultWithoutValueShould
 		assertThat(
 				THE_RESULT.onSuccess(() ->
 				{
-					return Result.withValue("Success");
+					return AbstractResult.withValue("Success");
 				}), hasValue("Success"));
 	}
 

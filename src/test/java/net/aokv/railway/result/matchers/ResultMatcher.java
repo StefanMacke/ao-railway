@@ -4,28 +4,30 @@ import net.aokv.railway.result.Message;
 
 public class ResultMatcher
 {
-	public static <T> IsSuccess<T> isSuccess()
+	public static <TSuccess, TFailure> IsSuccess<TSuccess, TFailure> isSuccess()
 	{
-		return new IsSuccess<T>();
+		return new IsSuccess<TSuccess, TFailure>();
 	}
 
-	public static <T> IsFailure<T> isFailure()
+	public static <TSuccess, TFailure> IsFailure<TSuccess, TFailure> isFailure()
 	{
-		return new IsFailure<T>();
+		return new IsFailure<TSuccess, TFailure>();
 	}
 
-	public static <T> IsFailureWithMessageText<T> isFailureWithMessageText(final String messageText)
+	public static <TSuccess> IsFailureWithMessageText<TSuccess> isFailureWithMessageText(
+			final String messageText)
 	{
-		return new IsFailureWithMessageText<T>(messageText);
+		return new IsFailureWithMessageText<>(messageText);
 	}
 
-	public static <T> IsFailureWithMessage<T> isFailureWithMessage(final Message message)
+	public static <TSuccess, TFailure> IsFailureWithMessage<TSuccess, TFailure> isFailureWithMessage(
+			final Message message)
 	{
-		return new IsFailureWithMessage<T>(message);
+		return new IsFailureWithMessage<TSuccess, TFailure>(message);
 	}
 
-	public static <T> HasValue<T> hasValue(final T value)
+	public static <TSuccess, TFailure> HasValue<TSuccess, TFailure> hasValue(final TSuccess value)
 	{
-		return new HasValue<T>(value);
+		return new HasValue<TSuccess, TFailure>(value);
 	}
 }

@@ -3,13 +3,13 @@ package net.aokv.railway.result.matchers;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import net.aokv.railway.result.Result;
+import net.aokv.railway.result.AbstractResult;
 
-public class HasValue<T> extends TypeSafeDiagnosingMatcher<Result<T>>
+public class HasValue<TSuccess, TFailure> extends TypeSafeDiagnosingMatcher<AbstractResult<TSuccess, TFailure>>
 {
-	private final T value;
+	private final TSuccess value;
 
-	public HasValue(final T value)
+	public HasValue(final TSuccess value)
 	{
 		this.value = value;
 	}
@@ -23,7 +23,7 @@ public class HasValue<T> extends TypeSafeDiagnosingMatcher<Result<T>>
 	}
 
 	@Override
-	protected boolean matchesSafely(final Result<T> result, final Description description)
+	protected boolean matchesSafely(final AbstractResult<TSuccess, TFailure> result, final Description description)
 	{
 		description.appendText("was ")
 				.appendValue(result.toString());
