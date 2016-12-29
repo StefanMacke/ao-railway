@@ -17,27 +17,15 @@ import java.util.function.Supplier;
 public abstract class Result<TSuccess, TFailure>
 {
 	/**
-	 * Creates a new Result with the given error message.
+	 * Creates a new Result with the given error.
 	 *
-	 * @param error The error message.
+	 * @param error The error.
 	 * @return Failed Result.
 	 */
-	public static <TSuccess> Result<TSuccess, Message> withError(final Message error)
+	public static <TSuccess, TFailure> Result<TSuccess, TFailure> withError(final TFailure error)
 	{
 		assertParameterNotNull(error, "Error");
 		return new Failure<>(error);
-	}
-
-	/**
-	 * Creates a new Result with an error from the given text.
-	 *
-	 * @param error The error message.
-	 * @return Failed Result.
-	 */
-	public static <TSuccess> Result<TSuccess, Message> withError(final String error)
-	{
-		assertParameterNotNull(error, "Error");
-		return withError(Message.withError(error));
 	}
 
 	/**
@@ -71,7 +59,7 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param error The error to set, if value is null.
 	 * @return Successful Result with value or failed Result.
 	 */
-	public static <TSuccess> Result<TSuccess, Message> with(final TSuccess value, final Message error)
+	public static <TSuccess, TFailure> Result<TSuccess, TFailure> with(final TSuccess value, final TFailure error)
 	{
 		if (value != null)
 		{
@@ -88,8 +76,8 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param error The error to set, if value is null or an empty Optional.
 	 * @return Successful Result with value or failed Result.
 	 */
-	public static <TSuccess> Result<TSuccess, Message> with(final Optional<TSuccess> valueOrNothing,
-			final Message error)
+	public static <TSuccess, TFailure> Result<TSuccess, TFailure> with(
+			final Optional<TSuccess> valueOrNothing, final TFailure error)
 	{
 		if (valueOrNothing == null || !valueOrNothing.isPresent())
 		{
