@@ -10,6 +10,8 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import net.aokv.railway.message.Message;
+
 public class FailedResultShould
 {
 	private static final Message THE_ERROR = Message.withError("The error");

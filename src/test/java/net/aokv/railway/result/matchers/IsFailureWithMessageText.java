@@ -3,8 +3,8 @@ package net.aokv.railway.result.matchers;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
+import net.aokv.railway.message.Message;
 import net.aokv.railway.result.Result;
-import net.aokv.railway.result.Message;
 
 public class IsFailureWithMessageText<TSuccess>
 		extends TypeSafeDiagnosingMatcher<Result<TSuccess, Message>>

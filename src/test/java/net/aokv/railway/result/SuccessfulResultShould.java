@@ -9,6 +9,8 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
+import net.aokv.railway.message.Message;
+
 public class SuccessfulResultShould
 {
 	private static final String THE_VALUE = "The value";

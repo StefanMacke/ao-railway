@@ -1,4 +1,4 @@
-package net.aokv.railway.result;
+package net.aokv.railway.message;
 
 public enum MessageLevel
 {

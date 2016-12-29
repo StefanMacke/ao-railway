@@ -1,6 +1,6 @@
 package net.aokv.railway.result.matchers;
 
-import net.aokv.railway.result.Message;
+import net.aokv.railway.message.Message;
 
 public class ResultMatcher
 {

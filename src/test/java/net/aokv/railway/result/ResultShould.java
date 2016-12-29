@@ -10,6 +10,8 @@ import java.util.Optional;
 
 import org.junit.Test;
 
+import net.aokv.railway.message.Message;
+
 public class ResultShould
 {
 	private static final String THE_VALUE = "The value";

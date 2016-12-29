@@ -1,4 +1,4 @@
-package net.aokv.railway.result;
+package net.aokv.railway.message;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;

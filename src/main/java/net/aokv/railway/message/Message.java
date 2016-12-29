@@ -1,4 +1,4 @@
-package net.aokv.railway.result;
+package net.aokv.railway.message;
 
 import java.io.PrintWriter;
 import java.io.Serializable;

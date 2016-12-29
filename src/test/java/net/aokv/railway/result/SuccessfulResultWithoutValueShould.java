@@ -7,6 +7,8 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
+import net.aokv.railway.message.Message;
+
 public class SuccessfulResultWithoutValueShould
 {
 	private static final Result<Void, Message> THE_RESULT = Result.withoutValue();
