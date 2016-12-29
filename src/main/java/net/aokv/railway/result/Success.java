@@ -1,6 +1,7 @@
 package net.aokv.railway.result;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -129,5 +130,35 @@ public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 			return (TResult) new Failure<>(error);
 		}
 		return (TResult) new Success<>(optional.get());
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <TResult extends Result<TSuccess, TFailure>> TResult onSuccess(final Consumer<TSuccess> function)
+	{
+		function.accept(getValue());
+		return (TResult) this;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <TResult extends Result<?, TFailure>> TResult onFailure(final Runnable function)
+	{
+		return (TResult) this;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <TResult extends Result<?, TFailure>> TResult onFailure(final Consumer<TFailure> function)
+	{
+		return (TResult) this;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <TResult extends Result<?, TFailure>> TResult onFailure(
+			final Predicate<TFailure> predicate, final Consumer<TFailure> function)
+	{
+		return (TResult) this;
 	}
 }

@@ -179,14 +179,7 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public <TResult extends Result<TSuccess, TFailure>> TResult onSuccess(final Consumer<TSuccess> function)
-	{
-		if (!isFailure())
-		{
-			function.accept(getValue());
-		}
-		return (TResult) this;
-	}
+	public abstract <TResult extends Result<TSuccess, TFailure>> TResult onSuccess(final Consumer<TSuccess> function);
 
 	/**
 	 * Runs the given function, if the Result is failed.
@@ -194,14 +187,7 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public <TResult extends Result<?, TFailure>> TResult onFailure(final Runnable function)
-	{
-		if (isFailure())
-		{
-			function.run();
-		}
-		return (TResult) this;
-	}
+	public abstract <TResult extends Result<?, TFailure>> TResult onFailure(final Runnable function);
 
 	/**
 	 * Runs the given function, if the Result is failed.
@@ -209,14 +195,7 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public <TResult extends Result<?, TFailure>> TResult onFailure(final Consumer<TFailure> function)
-	{
-		if (isFailure())
-		{
-			function.accept(getError());
-		}
-		return (TResult) this;
-	}
+	public abstract <TResult extends Result<?, TFailure>> TResult onFailure(final Consumer<TFailure> function);
 
 	/**
 	 * Runs the given function, if the Result is failed and the error matches the given predicate.
@@ -225,15 +204,8 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public <TResult extends Result<?, TFailure>> TResult onFailure(
-			final Predicate<TFailure> predicate, final Consumer<TFailure> function)
-	{
-		if (isFailure() && predicate.test(getError()))
-		{
-			function.accept(getError());
-		}
-		return (TResult) this;
-	}
+	public abstract <TResult extends Result<?, TFailure>> TResult onFailure(
+			final Predicate<TFailure> predicate, final Consumer<TFailure> function);
 
 	/**
 	 * Runs the given function, regardless of the Result's outcome.
