@@ -2,7 +2,6 @@ description = "Framework for Railway Oriented Programming"
 
 logger.info("Gradle Projekt ${project.name}")
 logger.info("Das Encoding des Projekts <${project.group}.${project.name}> ist ${project.encoding}")
-logger.info("Artifacts Repo: $project.artifactsURL$project.artifactsRepoKey")
 logger.info(description)
 
 logger.debug("Build mit project.gradleApplyFromPath: ${project.gradleApplyFromPath}")
@@ -12,8 +11,7 @@ configurations.create('${project.name}')
 
 buildscript {
     repositories {
-        maven { url = "${project.artifactsURL}${project.artifactsRepoKey}".toURL() }
-        ivy { url = "${project.artifactsURL}${project.artifactsRepoKey}".toURL() }
+        mavenCentral()
     }
     apply from: "${project.gradleApplyFromPath}/net-aokv-classpath.gradle", to: buildscript
 }
