@@ -1,5 +1,3 @@
 dependencies {
-	classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.+',
-		'com.puppycrawl.tools:checkstyle:6.+',
-		'com.bmuschko:gradle-cargo-plugin:2.2.2'
+	classpath 'com.puppycrawl.tools:checkstyle:6.+'
 }
