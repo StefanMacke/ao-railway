@@ -34,7 +34,7 @@ public abstract class Result<TSuccess, TFailure>
 	 */
 	public static <TFailure> Result<Void, TFailure> withoutValue()
 	{
-		return new Success<Void, TFailure>(null);
+		return new Success<>(null);
 	}
 
 	/**
@@ -47,7 +47,7 @@ public abstract class Result<TSuccess, TFailure>
 	public static <TSuccess, TFailure> Result<TSuccess, TFailure> withValue(final TSuccess value)
 	{
 		assertParameterNotNull(value, "Value");
-		return new Success<TSuccess, TFailure>(value);
+		return new Success<>(value);
 	}
 
 	/**

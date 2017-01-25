@@ -7,7 +7,7 @@ import java.io.StringWriter;
 import com.google.common.base.Objects;
 
 /**
- * A Message. Immutable. Is created by a <code>MeldungBuilder</code>.
+ * A Message. Immutable. Is created by a <code>MessageBuilder</code>.
  */
 public final class Message implements Serializable
 {
@@ -24,11 +24,11 @@ public final class Message implements Serializable
 	/**
 	 * A builder (pattern) for a Message.
 	 */
-	public static class MeldungBuilder
+	public static class MessageBuilder
 	{
 		private final Message message;
 
-		private MeldungBuilder()
+		private MessageBuilder()
 		{
 			message = new Message();
 		}
@@ -49,7 +49,7 @@ public final class Message implements Serializable
 		 * @param code The new Message's code.
 		 * @return The builder.
 		 */
-		public MeldungBuilder withCode(final int code)
+		public MessageBuilder withCode(final int code)
 		{
 			message.code = code;
 			return this;
@@ -61,7 +61,7 @@ public final class Message implements Serializable
 		 * @param level The new Message's MessageLevel.
 		 * @return The builder.
 		 */
-		public MeldungBuilder withLevel(final MessageLevel level)
+		public MessageBuilder withLevel(final MessageLevel level)
 		{
 			message.level = level;
 			return this;
@@ -73,7 +73,7 @@ public final class Message implements Serializable
 		 * @param index The new Message's index.
 		 * @return The builder.
 		 */
-		public MeldungBuilder withIndex(final int index)
+		public MessageBuilder withIndex(final int index)
 		{
 			message.index = index;
 			return this;
@@ -85,7 +85,7 @@ public final class Message implements Serializable
 		 * @param text The new Message's text.
 		 * @return The builder.
 		 */
-		public MeldungBuilder withText(final String text)
+		public MessageBuilder withText(final String text)
 		{
 			message.text = text;
 			return this;
@@ -97,7 +97,7 @@ public final class Message implements Serializable
 		 * @param source The new Message's source.
 		 * @return The builder.
 		 */
-		public MeldungBuilder withSource(final String source)
+		public MessageBuilder withSource(final String source)
 		{
 			message.source = source;
 			return this;
@@ -109,7 +109,7 @@ public final class Message implements Serializable
 		 * @param details The new Message's details.
 		 * @return The builder.
 		 */
-		public MeldungBuilder withDetails(final String details)
+		public MessageBuilder withDetails(final String details)
 		{
 			message.details = details;
 			return this;
@@ -121,7 +121,7 @@ public final class Message implements Serializable
 		 * @param throwable The error for the Message's details.
 		 * @return The builder.
 		 */
-		public MeldungBuilder withDetails(final Throwable throwable)
+		public MessageBuilder withDetails(final Throwable throwable)
 		{
 			final StringWriter stringWriter = new StringWriter();
 			final PrintWriter printWriter = new PrintWriter(stringWriter);
@@ -136,9 +136,9 @@ public final class Message implements Serializable
 	 *
 	 * @return The new MessageBuilder for a message.
 	 */
-	public static MeldungBuilder create()
+	public static MessageBuilder create()
 	{
-		return new MeldungBuilder();
+		return new MessageBuilder();
 	}
 
 	/**
@@ -146,9 +146,9 @@ public final class Message implements Serializable
 	 *
 	 * @return The new MessageBuilder for an error message.
 	 */
-	public static MeldungBuilder createError()
+	public static MessageBuilder createError()
 	{
-		return new MeldungBuilder()
+		return new MessageBuilder()
 				.withLevel(MessageLevel.ERROR);
 	}
 
@@ -160,7 +160,7 @@ public final class Message implements Serializable
 	 */
 	public static Message withError(final String text)
 	{
-		return new MeldungBuilder()
+		return new MessageBuilder()
 				.withLevel(MessageLevel.ERROR)
 				.withText(text)
 				.build();
