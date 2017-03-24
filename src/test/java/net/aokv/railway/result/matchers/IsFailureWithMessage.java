@@ -25,10 +25,11 @@ public class IsFailureWithMessage<TSuccess, TFailure>
 	}
 
 	@Override
-	protected boolean matchesSafely(final Result<TSuccess, TFailure> ergebnis, final Description description)
+	protected boolean matchesSafely(final Result<TSuccess, TFailure> result, final Description description)
 	{
 		description.appendText("was ")
-				.appendValue(ergebnis.toString());
-		return ergebnis.getError().equals(message);
+				.appendValue(result.toString());
+		return result.getError()
+				.equals(message);
 	}
 }
