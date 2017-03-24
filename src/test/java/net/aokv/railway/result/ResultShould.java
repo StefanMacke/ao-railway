@@ -54,9 +54,9 @@ public class ResultShould
 	@Test
 	public void beCreatedFromEmptyOptional()
 	{
-		final Result<String, Message> ergebnis = Result.with(Optional.empty(), THE_ERROR);
-		assertThat(ergebnis, isFailure());
-		assertThat(ergebnis, isFailureWithMessage(THE_ERROR));
+		final Result<String, Message> result = Result.with(Optional.empty(), THE_ERROR);
+		assertThat(result, isFailure());
+		assertThat(result, isFailureWithMessage(THE_ERROR));
 	}
 
 	@Test
@@ -70,35 +70,29 @@ public class ResultShould
 	@Test
 	public void beCreatedFromNonExistingValue()
 	{
-		final Result<String, Message> ergebnis = Result.with(null, THE_ERROR);
-		assertThat(ergebnis, isFailure());
-		assertThat(ergebnis, isFailureWithMessage(THE_ERROR));
+		final Result<String, Message> result = Result.with(null, THE_ERROR);
+		assertThat(result, isFailure());
+		assertThat(result, isFailureWithMessage(THE_ERROR));
 	}
 
 	@Test
 	public void beCreatedFromNonExistingOptional()
 	{
 		final Optional<String> o = null;
-		final Result<String, Message> ergebnis = Result.with(o, THE_ERROR);
-		assertThat(ergebnis, isFailure());
-		assertThat(ergebnis, isFailureWithMessage(THE_ERROR));
+		final Result<String, Message> result = Result.with(o, THE_ERROR);
+		assertThat(result, isFailure());
+		assertThat(result, isFailureWithMessage(THE_ERROR));
 	}
 
 	@Test
 	public void extractValueFromOptional()
 	{
-		assertThat(
-				Result.withValue(Optional.of("Value"))
-						.ifValueIsPresent(String.class, THE_ERROR),
-				hasValue("Value"));
-		assertThat(
-				Result.withValue(Optional.empty())
-						.ifValueIsPresent(String.class, THE_ERROR),
-				isFailureWithMessage(THE_ERROR));
-		assertThat(
-				Result.withValue("NotAnOptional")
-						.ifValueIsPresent(String.class, THE_ERROR),
-				isFailureWithMessage(THE_ERROR));
+		assertThat(Result.withValue(Optional.of("Value"))
+				.ifValueIsPresent(String.class, THE_ERROR), hasValue("Value"));
+		assertThat(Result.withValue(Optional.empty())
+				.ifValueIsPresent(String.class, THE_ERROR), isFailureWithMessage(THE_ERROR));
+		assertThat(Result.withValue("NotAnOptional")
+				.ifValueIsPresent(String.class, THE_ERROR), isFailureWithMessage(THE_ERROR));
 	}
 
 	@Test
