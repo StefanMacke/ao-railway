@@ -78,6 +78,13 @@ public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 	}
 
 	@Override
+	public Result<TSuccess, TFailure> onSuccess(final Consumer<TSuccess> function)
+	{
+		function.accept(getValue());
+		return this;
+	}
+
+	@Override
 	public Result<TSuccess, TFailure> ensure(
 			final Predicate<TSuccess> predicate, final TFailure error)
 	{
@@ -126,13 +133,6 @@ public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 			return new Failure<>(error);
 		}
 		return new Success<>(optional.get());
-	}
-
-	@Override
-	public Result<TSuccess, TFailure> onSuccess(final Consumer<TSuccess> function)
-	{
-		function.accept(getValue());
-		return this;
 	}
 
 	@Override

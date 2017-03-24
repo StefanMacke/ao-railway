@@ -89,8 +89,7 @@ public abstract class Result<TSuccess, TFailure>
 	{
 		if (parameter == null)
 		{
-			throw new IllegalArgumentException(
-					String.format("%s may not be null.", name));
+			throw new IllegalArgumentException(String.format("%s may not be null.", name));
 		}
 	}
 
@@ -148,7 +147,7 @@ public abstract class Result<TSuccess, TFailure>
 	 * Combines multiple Results. Returns the first failed Result or a successful Result without a
 	 * value, if all Results are successful.
 	 *
-	 * @param results The Results to combine.
+	 * @param otherResult The Result to combine with the current one.
 	 * @return Result of the combination.
 	 */
 	public abstract Result<?, TFailure> combine(final Result<?, TFailure> otherResult);
