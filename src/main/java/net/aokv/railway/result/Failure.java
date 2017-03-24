@@ -64,6 +64,12 @@ public class Failure<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 	}
 
 	@Override
+	public Result<TSuccess, TFailure> onSuccess(final Consumer<TSuccess> function)
+	{
+		return this;
+	}
+
+	@Override
 	public Result<TSuccess, TFailure> ensure(
 			final Predicate<TSuccess> predicate, final TFailure error)
 	{
@@ -89,12 +95,6 @@ public class Failure<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 			final Class<T> innerValue, final TFailure error)
 	{
 		return new Failure<>(getError());
-	}
-
-	@Override
-	public Result<TSuccess, TFailure> onSuccess(final Consumer<TSuccess> function)
-	{
-		return this;
 	}
 
 	@Override
