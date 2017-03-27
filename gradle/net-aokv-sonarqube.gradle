@@ -1,0 +1,4 @@
+/*
+    SonarQube Einstellungen
+ */
+apply plugin: 'org.sonarqube'
