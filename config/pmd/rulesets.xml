@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="Custom ruleset">
 	<rule ref="rulesets/java/android.xml"/>
 	<rule ref="rulesets/java/basic.xml"/>
