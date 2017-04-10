@@ -77,9 +77,7 @@ public class Failure<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 	}
 
 	@Override
-	public <T> Result<T, TFailure> flatMap(
-			final Function<TSuccess, Result<T, TFailure>> function)
-
+	public <T> Result<T, TFailure> flatMap(final Function<TSuccess, Result<T, TFailure>> function)
 	{
 		return new Failure<>(getError());
 	}
