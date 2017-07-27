@@ -257,4 +257,18 @@ public abstract class Result<TSuccess, TFailure>
 	 */
 	public abstract <T> Result<T, TFailure> ifValueIsPresent(
 			final Class<T> innerValue, final TFailure error);
+
+	public static <TSuccess, TFailure> Result<TSuccess, TFailure> combine(
+			final Result<TSuccess, TFailure>... otherResults)
+	{
+		Result<TSuccess, TFailure> lastResult = null;
+		for (Result<TSuccess, TFailure> otherResult : otherResults) {
+			lastResult = otherResult;
+			if (otherResult.isFailure())
+			{
+				return otherResult;
+			}
+		}
+		return lastResult;
+	}
 }
