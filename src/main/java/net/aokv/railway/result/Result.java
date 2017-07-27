@@ -258,15 +258,22 @@ public abstract class Result<TSuccess, TFailure>
 	public abstract <T> Result<T, TFailure> ifValueIsPresent(
 			final Class<T> innerValue, final TFailure error);
 
+	/**
+	 * This method takes some preconditions and test on null.
+	 * @param results a list of results
+	 * @param <TSuccess> The type of the contained value.
+	 * @param <TFailure> The type of the error object in case of a failure.
+	 * @return The last successful result or the first failure in chain.
+	 */
 	public static <TSuccess, TFailure> Result<TSuccess, TFailure> combine(
-			final Result<TSuccess, TFailure>... otherResults)
+			final Result<TSuccess, TFailure>... results)
 	{
 		Result<TSuccess, TFailure> lastResult = null;
-		for (Result<TSuccess, TFailure> otherResult : otherResults) {
-			lastResult = otherResult;
-			if (otherResult.isFailure())
+		for (Result<TSuccess, TFailure> result : results) {
+			lastResult = result;
+			if (result.isFailure())
 			{
-				return otherResult;
+				return result;
 			}
 		}
 		return lastResult;
