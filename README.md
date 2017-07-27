@@ -17,3 +17,4 @@ See Scott Wlaschin's talk on the subject for more information: [Scott Wlaschin -
                     .onFailure(() -> logger.error("Password could not be changed"))
                     .map(user -> user);
 
+Or start with `com.example.Main` class.
