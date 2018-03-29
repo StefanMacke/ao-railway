@@ -136,19 +136,19 @@ public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 	}
 
 	@Override
-	public Result<?, TFailure> onFailure(final Runnable function)
+	public Result<TSuccess, TFailure> onFailure(final Runnable function)
 	{
 		return this;
 	}
 
 	@Override
-	public Result<?, TFailure> onFailure(final Consumer<TFailure> function)
+	public Result<TSuccess, TFailure> onFailure(final Consumer<TFailure> function)
 	{
 		return this;
 	}
 
 	@Override
-	public Result<?, TFailure> onFailure(
+	public Result<TSuccess, TFailure> onFailure(
 			final Predicate<TFailure> predicate, final Consumer<TFailure> function)
 	{
 		return this;
