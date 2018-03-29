@@ -98,21 +98,21 @@ public class Failure<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 	}
 
 	@Override
-	public Result<?, TFailure> onFailure(final Runnable function)
+	public Result<TSuccess, TFailure> onFailure(final Runnable function)
 	{
 		function.run();
 		return this;
 	}
 
 	@Override
-	public Result<?, TFailure> onFailure(final Consumer<TFailure> function)
+	public Result<TSuccess, TFailure> onFailure(final Consumer<TFailure> function)
 	{
 		function.accept(getError());
 		return this;
 	}
 
 	@Override
-	public Result<?, TFailure> onFailure(
+	public Result<TSuccess, TFailure> onFailure(
 			final Predicate<TFailure> predicate, final Consumer<TFailure> function)
 	{
 		if (predicate.test(getError()))

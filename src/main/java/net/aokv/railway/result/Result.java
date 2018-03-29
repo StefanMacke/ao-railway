@@ -185,7 +185,7 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public abstract Result<?, TFailure> onFailure(final Runnable function);
+	public abstract Result<TSuccess, TFailure> onFailure(final Runnable function);
 
 	/**
 	 * Runs the given function, if the Result is failed.
@@ -193,7 +193,7 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public abstract Result<?, TFailure> onFailure(final Consumer<TFailure> function);
+	public abstract Result<TSuccess, TFailure> onFailure(final Consumer<TFailure> function);
 
 	/**
 	 * Runs the given function, if the Result is failed and the error matches the given predicate.
@@ -202,7 +202,7 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public abstract Result<?, TFailure> onFailure(
+	public abstract Result<TSuccess, TFailure> onFailure(
 			final Predicate<TFailure> predicate, final Consumer<TFailure> function);
 
 	/**
@@ -211,7 +211,7 @@ public abstract class Result<TSuccess, TFailure>
 	 * @param function The function to run.
 	 * @return The current Result.
 	 */
-	public Result<?, ?> onBoth(
+	public Result<TSuccess, TFailure> onBoth(
 			final Consumer<? super Result<TSuccess, TFailure>> function)
 	{
 		function.accept(this);
