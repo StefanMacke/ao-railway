@@ -4,11 +4,12 @@ import static net.aokv.railway.result.matchers.ResultMatcher.isFailure;
 import static net.aokv.railway.result.matchers.ResultMatcher.isFailureWithMessage;
 import static net.aokv.railway.result.matchers.ResultMatcher.isFailureWithMessageText;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import net.aokv.railway.message.Message;
 
@@ -35,10 +36,10 @@ public class FailedResultShould
 		assertThat(THE_RESULT, isFailureWithMessage(THE_ERROR));
 	}
 
-	@Test(expected = FailedResultHasNoValueException.class)
+	@Test
 	public void notHaveValue()
 	{
-		THE_RESULT.getValue();
+		assertThrows(FailedResultHasNoValueException.class, () -> THE_RESULT.getValue());
 	}
 
 	@Test

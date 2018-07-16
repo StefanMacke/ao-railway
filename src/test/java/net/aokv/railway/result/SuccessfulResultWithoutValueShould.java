@@ -3,9 +3,10 @@ package net.aokv.railway.result;
 import static net.aokv.railway.result.matchers.ResultMatcher.hasValue;
 import static net.aokv.railway.result.matchers.ResultMatcher.isSuccess;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import net.aokv.railway.message.Message;
 
@@ -26,10 +27,10 @@ public class SuccessfulResultWithoutValueShould
 		assertThat(THE_RESULT.isFailure(), is(false));
 	}
 
-	@Test(expected = SuccessfulResultHasNoErrorException.class)
+	@Test
 	public void notHaveAnError()
 	{
-		THE_RESULT.getError();
+		assertThrows(SuccessfulResultHasNoErrorException.class, () -> THE_RESULT.getError());
 	}
 
 	@Test
@@ -73,33 +74,33 @@ public class SuccessfulResultWithoutValueShould
 		assertThat(c.getString(), is("Success"));
 	}
 
-	@Test(expected = EmptyResultHasNoValueException.class)
+	@Test
 	public void notRunConsumerOnItsValue()
 	{
-		THE_RESULT.onSuccess(v -> System.out.println(v));
+		assertThrows(EmptyResultHasNoValueException.class, () -> THE_RESULT.onSuccess(v -> System.out.println(v)));
 	}
 
-	@Test(expected = EmptyResultHasNoValueException.class)
+	@Test
 	public void notMapItsValue()
 	{
-		THE_RESULT.map(v -> v.getClass());
+		assertThrows(EmptyResultHasNoValueException.class, () -> THE_RESULT.map(v -> v.getClass()));
 	}
 
-	@Test(expected = EmptyResultHasNoValueException.class)
+	@Test
 	public void notFlatMapItsValue()
 	{
-		THE_RESULT.flatMap(wert -> THE_RESULT);
+		assertThrows(EmptyResultHasNoValueException.class, () -> THE_RESULT.flatMap(wert -> THE_RESULT));
 	}
 
-	@Test(expected = EmptyResultHasNoValueException.class)
+	@Test
 	public void notReturnItsValue()
 	{
-		THE_RESULT.getValue();
+		assertThrows(EmptyResultHasNoValueException.class, () -> THE_RESULT.getValue());
 	}
 
-	@Test(expected = EmptyResultHasNoValueException.class)
+	@Test
 	public void notCheckItsValue()
 	{
-		THE_RESULT.ensure(wert -> false, THE_ERROR);
+		assertThrows(EmptyResultHasNoValueException.class, () -> THE_RESULT.ensure(wert -> false, THE_ERROR));
 	}
 }

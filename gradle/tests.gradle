@@ -1,0 +1,20 @@
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+dependencies {
+    testCompile "org.hamcrest:hamcrest-library:${hamcrestVersion}",
+        "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}",
+        "org.junit.jupiter:junit-jupiter-params:${junitJupiterVersion}",
+        "org.assertj:assertj-core:${assertjVersion}",
+        "org.mockito:mockito-core:${mockitoVersion}"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}",
+        "org.junit.platform:junit-platform-launcher:${junitPlatformVersion}",
+        "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
+}
+
+junitPlatform {
+    filters {
+        includeClassNamePattern '.*(Test|Sollte|IntegrationTest|Integrationstest)'
+    }
+    // anschalten, um den kompletten Stacktrace bei Exceptions in Tests zu bekommen
+    //details 'verbose'
+}

@@ -5,9 +5,10 @@ import static net.aokv.railway.result.matchers.ResultMatcher.isFailure;
 import static net.aokv.railway.result.matchers.ResultMatcher.isFailureWithMessage;
 import static net.aokv.railway.result.matchers.ResultMatcher.isSuccess;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import net.aokv.railway.message.Message;
 
@@ -38,10 +39,10 @@ public class SuccessfulResultShould
 		assertThat(THE_RESULT, hasValue(THE_VALUE));
 	}
 
-	@Test(expected = SuccessfulResultHasNoErrorException.class)
+	@Test
 	public void notHaveAnError()
 	{
-		THE_RESULT.getError();
+		assertThrows(SuccessfulResultHasNoErrorException.class, () -> THE_RESULT.getError());
 	}
 
 	@Test

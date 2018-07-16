@@ -1,3 +1,0 @@
-dependencies {
-    testCompile group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
-}

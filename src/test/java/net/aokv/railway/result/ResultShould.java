@@ -4,11 +4,12 @@ import static net.aokv.railway.result.matchers.ResultMatcher.hasValue;
 import static net.aokv.railway.result.matchers.ResultMatcher.isFailure;
 import static net.aokv.railway.result.matchers.ResultMatcher.isFailureWithMessage;
 import static net.aokv.railway.result.matchers.ResultMatcher.isSuccess;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import net.aokv.railway.message.Message;
 
@@ -23,24 +24,24 @@ public class ResultShould
 	private static final Result<String, Message> FAILED_RESULT = Result.withError(THE_ERROR);
 	private static final Result<Void, Message> RESULT_WITHOUT_VALUE = Result.withoutValue();
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void notAcceptNullAsValue()
 	{
-		Result.withValue(null);
+		assertThrows(IllegalArgumentException.class, () -> Result.withValue(null));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void notAcceptNullAsError()
 	{
 		final Message e = null;
-		Result.withError(e);
+		assertThrows(IllegalArgumentException.class, () -> Result.withError(e));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void notAcceptNullAsErrorMessage()
 	{
 		final String e = null;
-		Result.withError(e);
+		assertThrows(IllegalArgumentException.class, () -> Result.withError(e));
 	}
 
 	@Test

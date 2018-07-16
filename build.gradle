@@ -6,7 +6,7 @@ buildscript {
     apply from: "gradle/repos.gradle"
     repositories repos
     dependencies {
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:${buildinfoVersion}",
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:${buildinfoVersion}","org.junit.platform:junit-platform-gradle-plugin:${junitPlatformVersion}",
             "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubeVersion}"
     }
 }
@@ -20,8 +20,7 @@ apply plugin: 'org.sonarqube'
 [
     "java",
     "eclipse",
-    "junit4",
-    "mockito",
+    "tests",
     "jacoco",
     "jdepend",
     "wrapper"
