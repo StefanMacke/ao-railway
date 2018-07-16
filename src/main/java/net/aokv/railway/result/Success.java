@@ -115,7 +115,7 @@ public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure>
 	@Override
 	public <T> Result<T, TFailure> map(final Function<TSuccess, T> function)
 	{
-		return flatMap(function.andThen(value -> new Success<>(value)));
+		return flatMap(function.andThen(value -> new Success<T, TFailure>(value)));
 	}
 
 	@Override
