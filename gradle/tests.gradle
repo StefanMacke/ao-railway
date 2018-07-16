@@ -15,6 +15,4 @@ junitPlatform {
     filters {
         includeClassNamePattern '.*(Test|Sollte|IntegrationTest|Integrationstest)'
     }
-    // anschalten, um den kompletten Stacktrace bei Exceptions in Tests zu bekommen
-    //details 'verbose'
 }

@@ -1,23 +1,34 @@
 apply plugin: 'jacoco'
 
-jacoco {
-    reportsDir = file("${project.reporting.baseDir.absolutePath}/jacoco")
+// https://github.com/junit-team/junit5/issues/1024
+project.afterEvaluate {
+    def junitPlatformTestTask = project.tasks.getByName('junitPlatformTest')
+
+    jacoco {
+        toolVersion = project.jacocoVersion
+        applyTo junitPlatformTestTask
+    }
+
+    project.task(type: JacocoReport, "junitPlatformJacocoReport",
+    {
+        executionData junitPlatformTestTask
+        sourceSets(sourceSets.main)
+        sourceDirectories = files(sourceSets.main.allSource.srcDirs)
+        classDirectories = files(sourceSets.main.output)
+
+        reports {
+            xml.enabled true
+            html.enabled true
+        }
+    })
 }
 
 jacocoTestReport {
     reports {
-        html.enabled true
         xml.enabled true
-        csv.enabled false
+        html.enabled true
     }
 }
 
-test {
-    jacoco {
-        append = false
-        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-        classDumpDir = file("$buildDir/jacoco/classdumps")
-    }
-}
-
-build.dependsOn jacocoTestReport
+check.dependsOn "jacocoTestReport"
+check.dependsOn "junitPlatformJacocoReport"

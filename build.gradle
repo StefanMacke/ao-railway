@@ -6,7 +6,8 @@ buildscript {
     apply from: "gradle/repos.gradle"
     repositories repos
     dependencies {
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:${buildinfoVersion}","org.junit.platform:junit-platform-gradle-plugin:${junitPlatformVersion}",
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:${buildinfoVersion}",
+            "org.junit.platform:junit-platform-gradle-plugin:${junitPlatformVersion}",
             "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubeVersion}"
     }
 }
@@ -27,8 +28,6 @@ apply plugin: 'org.sonarqube'
 ].each {
     apply from: "gradle/${it}.gradle"
 }
-
-repositories.each { logger.info("Repository $it.name") }
 
 dependencies {
     compile 'xml-apis:xml-apis:1.4.01',

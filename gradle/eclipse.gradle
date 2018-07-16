@@ -1,7 +1,6 @@
 apply plugin: 'eclipse'
 
 eclipseProject {
-
     def sep = System.getProperty('file.separator')
     def eclipseSettingsFile = getProjectDir().toString() + sep + ".settings" + sep + "org.eclipse.core.resources.prefs"
 
