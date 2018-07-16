@@ -1,0 +1,8 @@
+ext.repos = {
+    mavenLocal()
+    if (project.hasProperty("artifactRepository")) {
+        maven { url = artifactRepository }
+    } else {
+        mavenCentral()
+    }
+}

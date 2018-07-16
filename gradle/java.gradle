@@ -1,0 +1,9 @@
+apply plugin: 'java'
+
+sourceCompatibility = project.javaVersion
+targetCompatibility = project.javaVersion
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = project.encoding
+}

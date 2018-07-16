@@ -1,19 +1,15 @@
 apply plugin: 'eclipse'
 
-logger.info('Eclipse Plugin activated')
-
 eclipseProject {
 
     def sep = System.getProperty('file.separator')
     def eclipseSettingsFile = getProjectDir().toString() + sep + ".settings" + sep + "org.eclipse.core.resources.prefs"
 
-    logger.info("eclipseSettingsFile: ${eclipseSettingsFile}")
 
     def filePath = new File(eclipseSettingsFile)
 
     def settingPath = new File(filePath.getParent())
     if (!settingPath.exists()) {
-        logger.info("settingPath: ${settingPath} created")
         settingPath.mkdirs()
     }
 
@@ -31,7 +27,7 @@ eclipse.classpath.file {
     }
     whenMerged {  cp ->
         cp.entries.findAll { it instanceof SourceFolder && it.path.startsWith("src/") }.each {
-			it.output = it.path.replace("/src", "bin/")
+            it.output = it.path.replace("/src", "bin/")
         }
         cp.entries.removeAll { it.kind == "output" }
     }

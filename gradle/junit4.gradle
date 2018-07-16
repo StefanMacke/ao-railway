@@ -1,0 +1,4 @@
+dependencies {
+    testCompile "org.hamcrest:hamcrest-library:${hamcrestVersion}",
+        "junit:junit:${junit4Version}"
+}

@@ -1,7 +1,5 @@
 apply plugin: 'jdepend'
 
-logger.info('JDepend Plugin activated')
-
 tasks.withType(JDepend) {
     reports {
         xml.enabled true
