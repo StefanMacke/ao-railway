@@ -1,8 +1,0 @@
-apply plugin: 'maven'
-
-logger.info('Maven Plugin activated')
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}

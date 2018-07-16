@@ -1,44 +1,39 @@
 description = "Framework for Railway Oriented Programming"
 
-logger.info("Gradle Projekt ${project.name}")
-logger.info("Das Encoding des Projekts <${project.group}.${project.name}> ist ${project.encoding}")
-logger.info(description)
-
-logger.debug("Build mit project.gradleApplyFromPath: ${project.gradleApplyFromPath}")
-logger.debug("Konfiguration unter project.pluginConfigPath: ${project.pluginConfigPath}")
-
 configurations.create('${project.name}')
 
 buildscript {
-    repositories {
-        mavenCentral()
+    apply from: "gradle/repos.gradle"
+    repositories repos
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:${buildinfoVersion}",
+            "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubeVersion}"
     }
-    apply from: "${project.gradleApplyFromPath}/net-aokv-classpath.gradle", to: buildscript
 }
-logger.debug('buildscript Einstellungen wurden aktiviert')
+
+repositories repos
+
+apply plugin: 'maven'
+apply plugin: 'project-report'
+apply plugin: 'org.sonarqube'
 
 [
-	"maven",
-	"project-report",
-	"java",
-	"eclipse",
-	"junit4",
-	"mockito",
-	"checkstyle",
-	"findbugs",
-	"pmd",
-	"jacoco",
-	"jdepend",
-	"sonarqube"
+    "java",
+    "eclipse",
+    "junit4",
+    "mockito",
+    "jacoco",
+    "jdepend",
+    "wrapper"
 ].each {
-	apply from: "${project.gradleApplyFromPath}/net-aokv-${it}.gradle"
+    apply from: "gradle/${it}.gradle"
 }
 
 repositories.each { logger.info("Repository $it.name") }
 
 dependencies {
-	compile 'xml-apis:xml-apis:1.4.01',
-		'com.google.guava:guava:19.0'
+    compile 'xml-apis:xml-apis:1.4.01',
+        'com.google.guava:guava:19.0'
 }
 
 configurations.all {

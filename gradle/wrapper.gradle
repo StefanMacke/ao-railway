@@ -1,0 +1,4 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.3.1'
+    distributionUrl = "http://artifacts.ao-devnet/gradle-dist/gradle-${gradleVersion}-bin.zip"
+}

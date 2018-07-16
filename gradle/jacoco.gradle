@@ -1,9 +1,6 @@
 apply plugin: 'jacoco'
 
-logger.info('JaCoCo-Plugin activated')
-
 jacoco {
-    toolVersion = project.jacocoVersion
     reportsDir = file("${project.reporting.baseDir.absolutePath}/jacoco")
 }
 
@@ -19,7 +16,7 @@ test {
     jacoco {
         append = false
         destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-        classDumpFile = file("$buildDir/jacoco/classpathdumps")
+        classDumpDir = file("$buildDir/jacoco/classdumps")
     }
 }
 

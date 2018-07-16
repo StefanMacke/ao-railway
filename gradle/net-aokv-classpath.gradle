@@ -1,5 +1,0 @@
-dependencies {
-	classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.+',
-		'com.puppycrawl.tools:checkstyle:6.+',
-		'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.2.1'
-}
